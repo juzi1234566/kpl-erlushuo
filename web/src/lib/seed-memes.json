@@ -1,0 +1,508 @@
+[
+  {
+    "slug": "san-bi-ling",
+    "title": "三比零",
+    "definition": "系列赛 3:0 横扫，常用来形容一边倒或「来都来了不如体面点」。",
+    "origin_story": "KPL 常规赛/季后赛高频比分叙事，评论区模板句。",
+    "category": "赛果",
+    "hotness": 80,
+    "tags": ["横扫", "BO5"]
+  },
+  {
+    "slug": "rang-er-zhui-san",
+    "title": "让二追三",
+    "definition": "先落后 0-2，再连下三局 3-2 翻盘。",
+    "origin_story": "戏剧性系列赛叙事，二路解说最爱的剧本之一。",
+    "category": "赛果",
+    "hotness": 88,
+    "tags": ["翻盘", "BO5"]
+  },
+  {
+    "slug": "rang-yi-zhui-er",
+    "title": "让一追二",
+    "definition": "BO3 中先丢一局再连扳两局，常规赛翻盘的标准剧本。",
+    "origin_story": "BO3 赛制下最常见的逆转叙事，弹幕称「剧本拿捏了」。",
+    "category": "赛果",
+    "hotness": 78,
+    "tags": ["翻盘", "BO3"]
+  },
+  {
+    "slug": "ling-feng",
+    "title": "零封",
+    "definition": "整个系列赛不让对手拿下一局，统治力的直接体现。",
+    "origin_story": "赛后战报高频词，配合「碾压局」使用效果更佳。",
+    "category": "赛果",
+    "hotness": 76,
+    "tags": ["横扫", "统治力"]
+  },
+  {
+    "slug": "qiang-qi-da-zhan",
+    "title": "抢七大战",
+    "definition": "BO7 打满七局的巅峰对决，双方拼到最后一口气。",
+    "origin_story": "KPL 总决赛等关键场次的 BO7 赛制衍生，悬念拉满的代名词。",
+    "category": "赛果",
+    "hotness": 82,
+    "tags": ["BO7", "决赛"]
+  },
+  {
+    "slug": "bing-bu-xue-ren",
+    "title": "兵不血刃",
+    "definition": "赢得轻松写意，几乎没有失误和悬念的一局。",
+    "origin_story": "解说常用四字总结，被弹幕拿来反讽膀胱局时也很好用。",
+    "category": "赛果",
+    "hotness": 65,
+    "tags": ["碾压", "解说词"]
+  },
+  {
+    "slug": "bang-guang-ju",
+    "title": "膀胱局",
+    "definition": "拖到 20 分钟以上僵持不下的超长对局，观众和选手都憋得难受。",
+    "origin_story": "源自「看完这局再去厕所」的观赛体验，泛用于各类电竞。",
+    "category": "赛果",
+    "hotness": 74,
+    "tags": ["拉锯", "弹幕"]
+  },
+  {
+    "slug": "jing-ji-nian-ya",
+    "title": "经济碾压",
+    "definition": "全队经济领先滚成雪球，对面「装备差一个大件」打不动。",
+    "origin_story": "数据面板时代的产物，赛后战报里最直观的胜负注脚。",
+    "category": "赛果",
+    "hotness": 72,
+    "tags": ["经济", "雪球"]
+  },
+  {
+    "slug": "chao-gui",
+    "title": "超鬼",
+    "definition": "对线/团战表现极差，KDA 难看到离谱时的统称。",
+    "origin_story": "观众弹幕与虎扑串子常用黑话，后被解说偶尔玩梗引用。",
+    "category": "选手",
+    "hotness": 90,
+    "tags": ["KDA", "黑话"]
+  },
+  {
+    "slug": "guo-fu-di-yi",
+    "title": "国服第一",
+    "definition": "某英雄巅峰榜第一的荣誉头衔，也用来调侃「国服第一也翻车」。",
+    "origin_story": "王者荣耀巅峰赛荣誉体系，职业选手绝活英雄的常见前缀。",
+    "category": "选手",
+    "hotness": 86,
+    "tags": ["绝活", "巅峰赛"]
+  },
+  {
+    "slug": "tou-jia",
+    "title": "偷家",
+    "definition": "绕开正面团战直捣水晶，一波偷掉基地完成翻盘。",
+    "origin_story": "KPL 历史上多次名场面偷家让这一战术成为顶级节目效果。",
+    "category": "选手",
+    "hotness": 95,
+    "tags": ["名场面", "战术"]
+  },
+  {
+    "slug": "wu-sha",
+    "title": "五杀",
+    "definition": "一人连续击杀对方五人，个人能力的最高光时刻。",
+    "origin_story": "MOBA 通用最高荣誉，KPL 舞台五杀必上赛事集锦。",
+    "category": "选手",
+    "hotness": 92,
+    "tags": ["高光", "集锦"]
+  },
+  {
+    "slug": "ling-xing-zou-wei",
+    "title": "灵性走位",
+    "definition": "残血极限反杀或丝血逃生的骚走位，观众直呼「有点东西」。",
+    "origin_story": "解说口头禅之一，配合慢放回放是集锦标配。",
+    "category": "选手",
+    "hotness": 75,
+    "tags": ["操作", "解说词"]
+  },
+  {
+    "slug": "da-ye-he",
+    "title": "打野核",
+    "definition": "以打野位为绝对核心的体系，资源全喂打野carry全场。",
+    "origin_story": "版本更迭中野核体系多次统治 KPL，衍生「野爹」等叫法。",
+    "category": "选手",
+    "hotness": 70,
+    "tags": ["体系", "版本"]
+  },
+  {
+    "slug": "gong-ju-ren",
+    "title": "工具人",
+    "definition": "牺牲输出和数据、全力为队友做视野开团的辅助型角色。",
+    "origin_story": "辅助位自嘲用语，「工具人也有春天」是赛后采访常见回应。",
+    "category": "选手",
+    "hotness": 77,
+    "tags": ["辅助", "自嘲"]
+  },
+  {
+    "slug": "yan-yuan",
+    "title": "演员",
+    "definition": "调侃发挥离谱得像故意输，「不像失误像剧本」。",
+    "origin_story": "路人局反串文化传入观赛弹幕，纯玩梗需注意分寸。",
+    "category": "选手",
+    "hotness": 73,
+    "tags": ["弹幕", "黑话"]
+  },
+  {
+    "slug": "tian-xiu",
+    "title": "天秀",
+    "definition": "操作华丽到让人叹服，「秀」的最高级形态。",
+    "origin_story": "「稳住我们能赢」时代的弹幕热词，沿用至今。",
+    "category": "选手",
+    "hotness": 79,
+    "tags": ["操作", "弹幕"]
+  },
+  {
+    "slug": "xia-fan",
+    "title": "下饭",
+    "definition": "操作拉胯到「适合配着饭看」，与天秀相对。",
+    "origin_story": "源自游戏主播圈，形容看菜鸡互啄格外有食欲。",
+    "category": "选手",
+    "hotness": 84,
+    "tags": ["弹幕", "黑话"]
+  },
+  {
+    "slug": "hun-fen-ju-shou",
+    "title": "混分巨兽",
+    "definition": "全场划水却数据不差，赛后一看 KDA 还挺体面。",
+    "origin_story": "从路人局黑话演化，用来调侃「参团率高但存在感低」。",
+    "category": "选手",
+    "hotness": 68,
+    "tags": ["KDA", "黑话"]
+  },
+  {
+    "slug": "mai-dui-you",
+    "title": "卖队友",
+    "definition": "关键团战独自撤退把队友留在原地，「他先动的手」。",
+    "origin_story": "团战复盘经典画面，慢放镜头下谁先转身一目了然。",
+    "category": "选手",
+    "hotness": 71,
+    "tags": ["团战", "复盘"]
+  },
+  {
+    "slug": "shou-gan-huo-re",
+    "title": "手感火热",
+    "definition": "技能指哪打哪的爆种状态，「今天他是真神」。",
+    "origin_story": "解说描述选手状态的高频词，与「手凉」相对。",
+    "category": "选手",
+    "hotness": 66,
+    "tags": ["状态", "解说词"]
+  },
+  {
+    "slug": "fan-xiang-shan-xian",
+    "title": "反向闪现",
+    "definition": "关键时刻闪现按反方向，尴尬与节目效果齐飞。",
+    "origin_story": "手滑名场面的统称，职业舞台上出现必成当日热梗。",
+    "category": "选手",
+    "hotness": 83,
+    "tags": ["失误", "名场面"]
+  },
+  {
+    "slug": "jue-huo",
+    "title": "绝活",
+    "definition": "选手招牌英雄或独特理解，ban 掉等于砍半条命。",
+    "origin_story": "BP 环节「绝活被 ban」是赛后复盘与玩梗的经典入口。",
+    "category": "BP",
+    "hotness": 85,
+    "tags": ["英雄池", "BP"]
+  },
+  {
+    "slug": "zhen-dui-xing-ban",
+    "title": "针对性ban",
+    "definition": "四个 ban 位全冲着一名选手去，「教练组研究你很久了」。",
+    "origin_story": "强队核心选手的待遇，被 ban 越狠说明越被尊重。",
+    "category": "BP",
+    "hotness": 69,
+    "tags": ["BP", "战术"]
+  },
+  {
+    "slug": "fang-chu-lai-le",
+    "title": "放出来了",
+    "definition": "版本强势英雄或对手绝活没被 ban，弹幕齐刷「这都敢放？」。",
+    "origin_story": "BP 环节最大悬念点，赛后经常成为「输在 BP」的证据。",
+    "category": "BP",
+    "hotness": 76,
+    "tags": ["BP", "弹幕"]
+  },
+  {
+    "slug": "shu-zai-bp",
+    "title": "输在BP",
+    "definition": "把失利归因于教练 BP 失误的赛后复盘定式。",
+    "origin_story": "万能甩锅句式：赢了是选手carry，输了是 BP 背锅。",
+    "category": "BP",
+    "hotness": 81,
+    "tags": ["BP", "复盘"]
+  },
+  {
+    "slug": "qiang-er-lou",
+    "title": "抢二楼",
+    "definition": "用前面选人位抢下关键英雄，打乱对手 BP 节奏。",
+    "origin_story": "BP 博弈术语，衍生「四楼五楼藏绝活」等玩法叙事。",
+    "category": "BP",
+    "hotness": 62,
+    "tags": ["BP", "博弈"]
+  },
+  {
+    "slug": "du-gou-bp",
+    "title": "赌狗BP",
+    "definition": "不按版本理解出牌、全押冷门体系的高风险 BP。",
+    "origin_story": "赌赢封神赌输背锅，是复盘节目最爱的争议话题。",
+    "category": "BP",
+    "hotness": 67,
+    "tags": ["BP", "冷门"]
+  },
+  {
+    "slug": "ban-wei-jing-yi",
+    "title": "ban位敬意",
+    "definition": "对手用宝贵 ban 位封你的英雄，是职业选手的最高礼遇。",
+    "origin_story": "「他的绝活值一个 ban 位」是评价选手统治力的硬指标。",
+    "category": "BP",
+    "hotness": 64,
+    "tags": ["BP", "荣誉"]
+  },
+  {
+    "slug": "si-yi-fen-tui",
+    "title": "四一分推",
+    "definition": "四人抱团牵制、一人单带偷塔的经典分推运营体系。",
+    "origin_story": "KPL 早期战术体系代表作，「运营流」的招牌打法。",
+    "category": "术语",
+    "hotness": 72,
+    "tags": ["战术", "运营"]
+  },
+  {
+    "slug": "yi-bo-liu",
+    "title": "一波流",
+    "definition": "攒够一波兵线和大招直接终结比赛，不给翻盘机会。",
+    "origin_story": "MOBA 通用战术词，与「运营流」相对的暴力美学。",
+    "category": "术语",
+    "hotness": 70,
+    "tags": ["战术", "节奏"]
+  },
+  {
+    "slug": "yue-ta-qiang-sha",
+    "title": "越塔强杀",
+    "definition": "顶着防御塔伤害强行击杀，艺高人胆大或送人头二选一。",
+    "origin_story": "「敢越就敢反杀」是对线期最刺激的博弈点。",
+    "category": "术语",
+    "hotness": 75,
+    "tags": ["对线", "博弈"]
+  },
+  {
+    "slug": "qiang-long",
+    "title": "抢龙",
+    "definition": "在对方即将击杀主宰/暴君时用惩击或技能抢走 buff。",
+    "origin_story": "「一个惩击改变一局比赛」，KPL 名场面高产区。",
+    "category": "术语",
+    "hotness": 89,
+    "tags": ["资源", "名场面"]
+  },
+  {
+    "slug": "dun-cao",
+    "title": "蹲草",
+    "definition": "埋伏在草丛等对手脸探，王者峡谷第一恐怖片。",
+    "origin_story": "「小心草丛」游戏语音深入人心，衍生无数阴人集锦。",
+    "category": "术语",
+    "hotness": 74,
+    "tags": ["视野", "伏击"]
+  },
+  {
+    "slug": "ni-feng-fan-pan",
+    "title": "逆风翻盘",
+    "definition": "经济大幅落后仍靠一波团战或运营扳回来的对局。",
+    "origin_story": "电竞最动人的叙事母题，「不到水晶碎不算输」。",
+    "category": "术语",
+    "hotness": 87,
+    "tags": ["翻盘", "叙事"]
+  },
+  {
+    "slug": "gao-di-bu-chu",
+    "title": "高地不出",
+    "definition": "劣势方龟缩高地等翻盘机会，进攻方久攻不下。",
+    "origin_story": "拉锯局标配画面，配合膀胱局食用风味更佳。",
+    "category": "术语",
+    "hotness": 61,
+    "tags": ["拉锯", "运营"]
+  },
+  {
+    "slug": "tuan-mie",
+    "title": "团灭",
+    "definition": "一波团战全歼对方五人，通常直接终结比赛。",
+    "origin_story": "游戏语音「Ace」的中文化，赛事解说的情绪爆点。",
+    "category": "术语",
+    "hotness": 78,
+    "tags": ["团战", "语音"]
+  },
+  {
+    "slug": "na-long-jiao-gong",
+    "title": "拿龙交公",
+    "definition": "偷掉大龙后立刻被团灭，白给的典型剧本。",
+    "origin_story": "「龙是拿了，人也没了」，复盘弹幕的快乐源泉。",
+    "category": "术语",
+    "hotness": 66,
+    "tags": ["资源", "弹幕"]
+  },
+  {
+    "slug": "wei-suo-fa-yu",
+    "title": "猥琐发育别浪",
+    "definition": "劣势时提醒队友苟住别送的标记语音，全网通用劝架词。",
+    "origin_story": "王者荣耀经典快捷消息，早已出圈成为日常用语。",
+    "category": "语音台词",
+    "hotness": 91,
+    "tags": ["语音", "出圈"]
+  },
+  {
+    "slug": "wen-zhu-neng-ying",
+    "title": "稳住，我们能赢",
+    "definition": "逆风局的精神支柱语音，也是「嘴上稳住手上投降」的反讽。",
+    "origin_story": "王者荣耀快捷消息，因太常出现在崩盘前而梗化。",
+    "category": "语音台词",
+    "hotness": 90,
+    "tags": ["语音", "反讽"]
+  },
+  {
+    "slug": "di-jun-wu-miao",
+    "title": "敌军还有五秒到达战场",
+    "definition": "开局倒计时语音，被用来预告一切「即将开始的大事」。",
+    "origin_story": "王者荣耀开局播报，出圈成为万能预警梗。",
+    "category": "语音台词",
+    "hotness": 88,
+    "tags": ["语音", "出圈"]
+  },
+  {
+    "slug": "first-blood",
+    "title": "First Blood",
+    "definition": "第一滴血，比赛第一个击杀，节奏的起点。",
+    "origin_story": "MOBA 通用播报，KPL 首杀数据也是赛前竞猜热门项。",
+    "category": "语音台词",
+    "hotness": 73,
+    "tags": ["语音", "数据"]
+  },
+  {
+    "slug": "bie-song",
+    "title": "别送",
+    "definition": "两个字的灵魂劝告，弹幕齐刷时通常已经晚了。",
+    "origin_story": "快捷消息里最简洁有力的一条，观赛弹幕高频词。",
+    "category": "语音台词",
+    "hotness": 82,
+    "tags": ["语音", "弹幕"]
+  },
+  {
+    "slug": "ming-chang-mian",
+    "title": "名场面",
+    "definition": "值得反复回放的经典画面，偷家、抢龙、极限一换五都算。",
+    "origin_story": "赛事剪辑文化核心词，「XX 名场面合集」是流量密码。",
+    "category": "弹幕",
+    "hotness": 80,
+    "tags": ["集锦", "剪辑"]
+  },
+  {
+    "slug": "xue-zhuan",
+    "title": "血赚",
+    "definition": "交换明显划算，「一换三血赚」；反之则是「血亏」。",
+    "origin_story": "团战经济学弹幕用语，与「这波不亏」组成算账三件套。",
+    "category": "弹幕",
+    "hotness": 77,
+    "tags": ["团战", "黑话"]
+  },
+  {
+    "slug": "zhe-bo-bu-kui",
+    "title": "这波不亏",
+    "definition": "无论输赢都能找补的万能总结，精神胜利法代表作。",
+    "origin_story": "源自玩家复盘口头禅，「这波啊，这波是肉蛋葱鸡」带火句式。",
+    "category": "弹幕",
+    "hotness": 85,
+    "tags": ["复盘", "黑话"]
+  },
+  {
+    "slug": "yyds",
+    "title": "YYDS（永远滴神）",
+    "definition": "对选手或战队的最高赞美缩写，「XX永远滴神」。",
+    "origin_story": "源自电竞直播圈口头禅，缩写后彻底出圈成为通用彩虹屁。",
+    "category": "弹幕",
+    "hotness": 93,
+    "tags": ["出圈", "彩虹屁"]
+  },
+  {
+    "slug": "la-kua",
+    "title": "拉胯",
+    "definition": "关键时刻掉链子，东北方言进入电竞语境后的全民用词。",
+    "origin_story": "经直播弹幕扩散，与「顶住」「起飞」构成状态三连。",
+    "category": "弹幕",
+    "hotness": 86,
+    "tags": ["黑话", "状态"]
+  },
+  {
+    "slug": "gao-guang-shi-ke",
+    "title": "高光时刻",
+    "definition": "个人表现的巅峰片段，游戏内置的「精彩时刻」采集功能同名。",
+    "origin_story": "Highlight 的中文化，赛事集锦与个人生涯回顾标配。",
+    "category": "弹幕",
+    "hotness": 75,
+    "tags": ["集锦", "数据"]
+  },
+  {
+    "slug": "cai-jiu-duo-lian",
+    "title": "菜就多练",
+    "definition": "简单粗暴的劝勉/嘲讽两用语，后接「输不起就别玩」。",
+    "origin_story": "路人局互喷金句出圈，语气取决于说话人是队友还是对手。",
+    "category": "弹幕",
+    "hotness": 89,
+    "tags": ["黑话", "出圈"]
+  },
+  {
+    "slug": "meng-zhi-dui",
+    "title": "梦之队",
+    "definition": "粉丝对全明星阵容或王朝战队的爱称，期望值拉满。",
+    "origin_story": "体育圈通用叙事移植到 KPL，纸面实力天下第一的代名词。",
+    "category": "战队",
+    "hotness": 68,
+    "tags": ["阵容", "叙事"]
+  },
+  {
+    "slug": "yin-he-zhan-jian",
+    "title": "银河战舰",
+    "definition": "重金打造的豪华阵容战队，「舰长」通常是明星选手。",
+    "origin_story": "足球圈皇马外号移植，转会期买人凶的战队都会被冠名。",
+    "category": "战队",
+    "hotness": 71,
+    "tags": ["转会", "阵容"]
+  },
+  {
+    "slug": "zhu-ke-chang-shuang-sha",
+    "title": "主客场双杀",
+    "definition": "同一赛季主客场两回合都赢下同一对手，地域赛制的荣誉叙事。",
+    "origin_story": "KPL 主客场化后的产物，城市德比的胜负记忆点。",
+    "category": "战队",
+    "hotness": 60,
+    "tags": ["主客场", "德比"]
+  },
+  {
+    "slug": "bao-leng",
+    "title": "爆冷",
+    "definition": "鱼腩掀翻豪门的以下克上，竞猜玩家的噩梦或狂欢。",
+    "origin_story": "体育通用词，KPL 常规赛「冷门制造机」年年有。",
+    "category": "战队",
+    "hotness": 79,
+    "tags": ["冷门", "竞猜"]
+  },
+  {
+    "slug": "ai-chuan-zi-bot",
+    "title": "AI串子bot",
+    "definition": "本站官方 AI 角色：明确标注 AI，只负责赛后整活，不装真人。",
+    "origin_story": "为合规与产品差异化设计的 bot 人设，替代「假用户暖场」。",
+    "category": "站务",
+    "hotness": 70,
+    "is_ai_assisted": true,
+    "tags": ["AI", "合规"]
+  },
+  {
+    "slug": "sai-hou-huang-jin-30fen",
+    "title": "赛后黄金 30 分钟",
+    "definition": "比赛刚结束时梗的产出与传播效率最高的时间窗。",
+    "origin_story": "垂直社区运营共识；本产品把自动化生梗对准这个窗口。",
+    "category": "站务",
+    "hotness": 75,
+    "is_ai_assisted": true,
+    "tags": ["运营", "AI"]
+  }
+]

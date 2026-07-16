@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -17,68 +18,34 @@ load_dotenv(ROOT / ".env")
 from db.supabase_client import SupabaseRest  # noqa: E402
 from sources.pvp_match_adapter import LEAGUE_SUMMER_2026, PvpMatchAdapter  # noqa: E402
 
-SEED_MEMES = [
-    {
-        "slug": "san-bi-ling",
-        "title": "三比零",
-        "definition": "系列赛 3:0 横扫，常用来形容一边倒或「来都来了不如体面点」。",
-        "origin_story": "KPL 常规赛/季后赛高频比分叙事，评论区模板句。",
-        "category": "赛果",
-        "hotness": 80,
-        "is_ai_assisted": False,
-        "moderation_status": "approved",
-    },
-    {
-        "slug": "chao-gui",
-        "title": "超鬼",
-        "definition": "对线/团战表现极差，KDA 难看到离谱时的统称。",
-        "origin_story": "观众弹幕与虎扑串子常用黑话，后被解说偶尔玩梗引用。",
-        "category": "选手",
-        "hotness": 90,
-        "is_ai_assisted": False,
-        "moderation_status": "approved",
-    },
-    {
-        "slug": "jue-huo",
-        "title": "绝活",
-        "definition": "选手招牌英雄或独特理解，ban 掉等于砍半条命。",
-        "origin_story": "BP 环节「绝活被 ban」是赛后复盘与玩梗的经典入口。",
-        "category": "BP",
-        "hotness": 85,
-        "is_ai_assisted": False,
-        "moderation_status": "approved",
-    },
-    {
-        "slug": "rang-er-zhui-san",
-        "title": "让二追三",
-        "definition": "先落后 0-2，再连下三局 3-2 翻盘。",
-        "origin_story": "戏剧性系列赛叙事，二路解说最爱的剧本之一。",
-        "category": "赛果",
-        "hotness": 88,
-        "is_ai_assisted": False,
-        "moderation_status": "approved",
-    },
-    {
-        "slug": "ai-chuan-zi-bot",
-        "title": "AI串子bot",
-        "definition": "本站官方 AI 角色：明确标注 AI，只负责赛后整活，不装真人。",
-        "origin_story": "为合规与产品差异化设计的 bot 人设，替代「假用户暖场」。",
-        "category": "站务",
-        "hotness": 70,
-        "is_ai_assisted": True,
-        "moderation_status": "approved",
-    },
-    {
-        "slug": "sai-hou-huang-jin-30fen",
-        "title": "赛后黄金 30 分钟",
-        "definition": "比赛刚结束时梗的产出与传播效率最高的时间窗。",
-        "origin_story": "垂直社区运营共识；本产品把自动化生梗对准这个窗口。",
-        "category": "站务",
-        "hotness": 75,
-        "is_ai_assisted": True,
-        "moderation_status": "approved",
-    },
-]
+# 种子梗唯一数据源：web/src/lib/seed-memes.json（与前端共用，勿在此硬编码）
+SEED_MEMES_JSON = ROOT.parent / "web" / "src" / "lib" / "seed-memes.json"
+
+# memes 表实际存在的列；JSON 里的 tags 等展示用字段在入库前剔除
+MEME_DB_COLUMNS = {
+    "slug",
+    "title",
+    "definition",
+    "origin_story",
+    "category",
+    "hotness",
+    "is_ai_assisted",
+    "moderation_status",
+}
+
+
+def load_seed_memes() -> list[dict]:
+    raw = json.loads(SEED_MEMES_JSON.read_text(encoding="utf-8"))
+    rows = []
+    for m in raw:
+        row = {k: v for k, v in m.items() if k in MEME_DB_COLUMNS}
+        row.setdefault("hotness", 50)
+        row.setdefault("is_ai_assisted", False)
+        row.setdefault("moderation_status", "approved")
+        rows.append(row)
+    return rows
+
+
 
 
 def main() -> None:
@@ -93,9 +60,10 @@ def main() -> None:
 
     # memes upsert by slug — table uses uuid id, so we need unique slug
     # PostgREST on_conflict=slug requires unique constraint on slug (we have it)
-    print(f"upsert memes x{len(SEED_MEMES)}")
+    seed_memes = load_seed_memes()
+    print(f"upsert memes x{len(seed_memes)}")
     # memes table: slug unique — but upsert needs primary key or unique cols
-    db.upsert("memes", SEED_MEMES, on_conflict="slug")
+    db.upsert("memes", seed_memes, on_conflict="slug")
 
     if args.memes_only:
         print("done (memes only)")
