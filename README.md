@@ -70,10 +70,12 @@ npm run dev
 - [x] 梗点信号规则引擎（横扫、极端 KDA、经济差等）
 - [x] DB schema + RLS
 - [x] Next.js 骨架 + 首页 / 梗百科占位 / OG 路由
-- [ ] DeepSeek 生梗 prompt spike（需 API Key）
-- [ ] yt-dlp 字幕 spike（需浏览器 cookies）
-- [ ] Vercel 部署 + 域名 + Cloudflare
-- [ ] 腾讯云轻量 + TMS 开通
+- [x] DeepSeek 真生梗（本机 Key 已接入，模型 deepseek-chat 已跑通）
+- [x] GitHub 私有仓库 https://github.com/juzi1234566/kpl-meme
+- [ ] 填入 Supabase URL/anon/service_role（仅差这一步密钥）
+- [ ] 同步赛程入库 + Vercel 部署 web
+- [ ] yt-dlp 字幕 spike
+- [ ] 腾讯云轻量 + TMS
 
 ## 合规提示
 
