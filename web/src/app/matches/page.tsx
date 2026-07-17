@@ -1,6 +1,5 @@
 import { readFile } from "fs/promises";
 import path from "path";
-import { 汉数 } from "@/lib/cn-num";
 
 type Summary = {
   league_id: string;
@@ -31,16 +30,16 @@ export default async function MatchesPage() {
   return (
     <div className="space-y-12">
       <header className="enter text-center">
-        <p className="tag tag--ochre mb-4">名录 · 二〇二六年夏季赛</p>
+        <p className="tag tag--accent mb-4">2026 夏季赛</p>
         <h1 className="text-3xl tracking-[0.3em]">赛程</h1>
-        <p className="mt-4 text-xs text-faint">录自官方公开赛果</p>
+        <p className="mt-4 text-xs text-faint">数据来自官方公开赛果</p>
       </header>
 
       {!summary ? (
         <div className="plate enter-1 p-8 text-center">
-          <p className="tag tag--ochre mb-4">尚无本地赛程存档</p>
+          <p className="tag tag--accent mb-4">暂无赛程数据</p>
           <p className="text-sm leading-loose text-muted">
-            请先在数据管线中运行回填脚本，生成本地赛程摘要后即可展示。
+            数据管线尚未回填本地赛程，稍后再来看看。
           </p>
         </div>
       ) : (
@@ -49,18 +48,18 @@ export default async function MatchesPage() {
             <div className="hairline mb-9" />
             <div className="grid grid-cols-3 gap-8 text-center">
               <div>
-                <div className="text-3xl tracking-widest">{汉数(summary.match_count)}</div>
+                <div className="text-3xl tracking-widest">{summary.match_count}</div>
                 <div className="tag mt-3">总场次</div>
               </div>
               <div>
-                <div className="text-3xl tracking-widest">{汉数(summary.finished)}</div>
-                <div className="tag mt-3">已赛毕</div>
+                <div className="text-3xl tracking-widest">{summary.finished}</div>
+                <div className="tag mt-3">已完赛</div>
               </div>
               <div>
                 <div className="text-3xl tracking-widest">
-                  {汉数(summary.match_count - summary.finished)}
+                  {summary.match_count - summary.finished}
                 </div>
-                <div className="tag mt-3">待赛</div>
+                <div className="tag mt-3">未开始</div>
               </div>
             </div>
             <div className="hairline mt-9" />
@@ -70,7 +69,7 @@ export default async function MatchesPage() {
             {summary.matches.slice(0, 30).map((m, i) => (
               <div
                 key={m.match_id}
-                className={`flex flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm transition-colors duration-500 hover:bg-[rgba(111,127,82,0.08)] ${
+                className={`flex flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm transition-colors duration-500 hover:bg-[rgba(47,122,125,0.07)] ${
                   i > 0 ? "border-t border-border/30" : ""
                 }`}
               >
@@ -86,8 +85,8 @@ export default async function MatchesPage() {
                   <span className={`tracking-[0.3em] ${m.status === 2 ? "" : "text-faint"}`}>
                     {m.score}
                   </span>
-                  <span className={`tag ${m.status === 2 ? "tag--ochre" : ""}`}>
-                    {m.status === 2 ? "赛毕" : "未赛"}
+                  <span className={`tag ${m.status === 2 ? "tag--accent" : ""}`}>
+                    {m.status === 2 ? "已完赛" : "未开始"}
                   </span>
                 </div>
               </div>

@@ -16,17 +16,17 @@ export async function GET(req: NextRequest) {
           width: "100%",
           display: "flex",
           background:
-            "radial-gradient(700px 500px at 20% 15%, rgba(140,106,60,0.10), transparent 65%), radial-gradient(600px 420px at 85% 80%, rgba(111,127,82,0.12), transparent 60%), #e9e4d0",
+            "radial-gradient(700px 500px at 20% 15%, rgba(47,122,125,0.10), transparent 65%), radial-gradient(600px 420px at 85% 80%, rgba(47,122,125,0.12), transparent 60%), #e0e9e7",
           padding: 34,
           fontFamily: "serif",
         }}
       >
-        {/* 细双线图版边框 */}
+        {/* 细双线边框 */}
         <div
           style={{
             flex: 1,
             display: "flex",
-            border: "1.5px solid rgba(107,95,62,0.55)",
+            border: "1.5px solid rgba(38,74,74,0.5)",
             padding: 7,
           }}
         >
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              border: "1px solid rgba(107,95,62,0.32)",
+              border: "1px solid rgba(38,74,74,0.28)",
               padding: "40px 56px",
             }}
           >
@@ -49,9 +49,9 @@ export async function GET(req: NextRequest) {
               }}
             >
               <div style={{ display: "flex", alignItems: "baseline", gap: 20 }}>
-                <div style={{ fontSize: 34, letterSpacing: 16, color: "#3d4232" }}>梗局</div>
-                <div style={{ fontSize: 15, letterSpacing: 6, color: "#8d8a6e" }}>
-                  非官方 · 粉丝社群
+                <div style={{ fontSize: 34, letterSpacing: 16, color: "#263433" }}>梗局</div>
+                <div style={{ fontSize: 15, letterSpacing: 6, color: "#64797a" }}>
+                  非官方粉丝社区
                 </div>
               </div>
               <div
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
                   fontSize: 62,
                   letterSpacing: 10,
                   lineHeight: 1.25,
-                  color: "#3d4232",
+                  color: "#263433",
                 }}
               >
                 {title}
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
               <div
                 style={{
                   fontSize: 26,
-                  color: "#6a6a52",
+                  color: "#46585a",
                   lineHeight: 1.7,
                   maxWidth: 900,
                 }}
@@ -93,18 +93,18 @@ export async function GET(req: NextRequest) {
               </div>
             </div>
 
-            {/* 落款 */}
+            {/* 底部 */}
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 fontSize: 16,
                 letterSpacing: 5,
-                color: "#8c6a3c",
+                color: "#2f7a7d",
               }}
             >
-              <span>梗局 · 玩梗图志 · 非官方</span>
-              <span>丙午年夏</span>
+              <span>梗局 · 玩梗社区 · 非官方</span>
+              <span>2026 夏</span>
             </div>
           </div>
         </div>

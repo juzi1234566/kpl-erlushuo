@@ -31,7 +31,7 @@ export default async function MemeDetailPage({
       </Link>
 
       <header className="enter-1 text-center">
-        <p className="tag tag--ochre mb-5">{meme.category} 部</p>
+        <p className="tag tag--accent mb-5">{meme.category}</p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <h1 className="text-4xl tracking-[0.2em]">{meme.title}</h1>
           {meme.is_ai_assisted && <span className="seal-ai">AI 生成</span>}
@@ -43,18 +43,18 @@ export default async function MemeDetailPage({
 
       <section className="plate enter-2 space-y-10 px-7 py-9 md:px-10">
         <div>
-          <p className="tag tag--ochre mb-4">释义</p>
+          <p className="tag tag--accent mb-4">释义</p>
           <p className="text-lg leading-loose">{meme.definition}</p>
         </div>
         <div className="hairline" />
         <div>
-          <p className="tag tag--ochre mb-4">出处考</p>
+          <p className="tag tag--accent mb-4">出处</p>
           <p className="leading-loose text-muted">{meme.origin_story}</p>
         </div>
       </section>
 
       <section className="enter-3">
-        <p className="tag tag--ochre mb-4 text-center">分享卡样</p>
+        <p className="tag tag--accent mb-4 text-center">分享卡片</p>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={og} alt={`${meme.title} 分享卡片`} className="plate w-full" />
       </section>

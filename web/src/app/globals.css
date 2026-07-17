@@ -1,24 +1,23 @@
 @import "tailwindcss";
 
 /* ============================================================
-   梗局 · 馆藏图鉴审美（「高级感」skill · 博物志图版模式）
-   陈年纸底 / 褪色颜料色 / 衬线展签排版 / 手工痕迹 / 极慢
-   色板锁死：纸 #e9e4d0 · 墨 #3d4232 · 橄榄绿 #6f7f52
-             赭石 #8c6a3c · 朱印红 #a04c34（仅 AI 标识）
+   梗局 · 馆藏质感设计系统（淡青版）
+   淡青纸底 / 深青灰墨（保证对比度）/ 衬线展签排版 / 纸张纹理
+   色板锁死：纸 #e0e9e7 · 墨 #263433 · 青 #2f7a7d
+             朱印红 #a04c34（仅 AI 标识）
    ============================================================ */
 
 :root {
-  --background: #e9e4d0; /* 米绿陈年纸 */
-  --foreground: #3d4232; /* 深青灰墨，绝不用纯黑 */
-  --card: rgba(255, 252, 240, 0.35);
-  --accent: #6f7f52; /* 橄榄浅绿：唯一主色 */
-  --accent-wash: rgba(111, 127, 82, 0.1); /* 浅绿水洗 */
-  --ochre: #8c6a3c; /* 赭石：编号与落款 */
+  --background: #e0e9e7; /* 淡青纸底 */
+  --foreground: #263433; /* 深青灰墨：足够深，保证可读性 */
+  --card: rgba(250, 253, 252, 0.5);
+  --accent: #2f7a7d; /* 青：主色 */
+  --accent-wash: rgba(47, 122, 125, 0.09); /* 淡青水洗 */
   --seal: #a04c34; /* 朱印红：仅 AI 标识 */
-  --muted: #6a6a52;
-  --faint: #8d8a6e;
-  --border: rgba(107, 95, 62, 0.45);
-  --border-soft: rgba(107, 95, 62, 0.28);
+  --muted: #46585a; /* 次要文字也压深，别看不清 */
+  --faint: #64797a;
+  --border: rgba(38, 74, 74, 0.4);
+  --border-soft: rgba(38, 74, 74, 0.22);
 }
 
 @theme inline {
@@ -26,12 +25,10 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-accent: var(--accent);
-  --color-ochre: var(--ochre);
   --color-seal: var(--seal);
   --color-muted: var(--muted);
   --color-faint: var(--faint);
   --color-border: var(--border);
-  --font-serif-cn: Georgia, "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
 }
 
 html {
@@ -39,10 +36,10 @@ html {
 }
 
 body {
-  /* 纸张三层：大块水渍 + 纤维噪点 + 基色。无一处干净平色 */
+  /* 纸张三层：大块水渍 + 纤维噪点 + 基色 */
   background-color: var(--background);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0038' numOctaves='4' seed='5'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.42 0 0 0 0 0.38 0 0 0 0 0.22 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='1100' height='1100' filter='url(%23b)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='11'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.38 0 0 0 0 0.33 0 0 0 0 0.18 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0038' numOctaves='4' seed='5'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.24 0 0 0 0 0.40 0 0 0 0 0.40 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='1100' height='1100' filter='url(%23b)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='11'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.22 0 0 0 0 0.35 0 0 0 0 0.35 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23f)'/%3E%3C/svg%3E");
   color: var(--foreground);
   min-height: 100vh;
   font-family: Georgia, "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
@@ -50,14 +47,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* 暖褐暗角（不拦截交互） */
+/* 青灰暗角（不拦截交互） */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 30;
-  background: radial-gradient(115% 90% at 50% 42%, transparent 58%, rgba(74, 58, 32, 0.16) 100%);
+  background: radial-gradient(115% 90% at 50% 42%, transparent 60%, rgba(30, 56, 56, 0.13) 100%);
 }
 
 a {
@@ -66,36 +63,36 @@ a {
 }
 
 ::selection {
-  background: rgba(111, 127, 82, 0.3);
-  color: #2e3325;
+  background: rgba(47, 122, 125, 0.28);
+  color: #1c2a2a;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(107, 95, 62, 0.35) transparent;
+  scrollbar-color: rgba(38, 74, 74, 0.35) transparent;
 }
 
 /* ---------- 展签体系 ---------- */
 
-/* 展签小字：大字距、赭褐、像美术馆标签 */
+/* 展签小字：大字距，像美术馆标签 */
 .tag {
   font-size: 12px;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.3em;
   color: var(--faint);
 }
 
-.tag--ochre {
-  color: var(--ochre);
+.tag--accent {
+  color: var(--accent);
 }
 
-/* 编号：斜体衬线，图鉴式 */
+/* 编号：斜体衬线 */
 .no {
   font-style: italic;
-  color: var(--ochre);
-  opacity: 0.85;
+  color: var(--accent);
+  opacity: 0.9;
 }
 
-/* 细线：褪色墨色 */
+/* 细线 */
 .hairline {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-soft) 18%, var(--border-soft) 82%, transparent);
@@ -122,11 +119,11 @@ a {
 
 a.plate:hover {
   background: var(--accent-wash);
-  border-color: rgba(92, 107, 66, 0.65);
+  border-color: rgba(47, 122, 125, 0.65);
 }
 
 a.plate:hover::before {
-  border-color: rgba(92, 107, 66, 0.4);
+  border-color: rgba(47, 122, 125, 0.35);
 }
 
 /* ---------- 展签按钮 ---------- */
@@ -137,9 +134,9 @@ a.plate:hover::before {
   border: 1px solid var(--border);
   padding: 0.7rem 2rem;
   font-size: 14px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.28em;
   color: var(--foreground);
-  background: rgba(255, 252, 240, 0.3);
+  background: rgba(250, 253, 252, 0.45);
   transition: background 0.6s ease, border-color 0.6s ease;
 }
 
@@ -153,16 +150,17 @@ a.plate:hover::before {
 
 .btn-plate:hover {
   background: var(--accent-wash);
-  border-color: rgba(92, 107, 66, 0.65);
+  border-color: rgba(47, 122, 125, 0.7);
 }
 
-.btn-plate--green {
-  background: rgba(111, 127, 82, 0.14);
-  border-color: rgba(92, 107, 66, 0.6);
+.btn-plate--primary {
+  background: rgba(47, 122, 125, 0.13);
+  border-color: rgba(47, 122, 125, 0.6);
+  color: #1f5456;
 }
 
-.btn-plate--green:hover {
-  background: rgba(111, 127, 82, 0.24);
+.btn-plate--primary:hover {
+  background: rgba(47, 122, 125, 0.22);
 }
 
 /* ---------- 朱印：AI 标识（全站唯一的红） ---------- */
@@ -181,7 +179,7 @@ a.plate:hover::before {
 
 /* ---------- 动效：只允许极慢 ---------- */
 
-@keyframes 淡入 {
+@keyframes fade-in-up {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -193,23 +191,23 @@ a.plate:hover::before {
 }
 
 .enter {
-  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: fade-in-up 1.6s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .enter-1 {
-  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) 0.25s both;
+  animation: fade-in-up 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
 }
 
 .enter-2 {
-  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+  animation: fade-in-up 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
 }
 
 .enter-3 {
-  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) 0.75s both;
+  animation: fade-in-up 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
 }
 
 /* 花线的呼吸：极缓慢的隐现 */
-@keyframes 呼吸 {
+@keyframes slow-breathe {
   0%,
   100% {
     opacity: 0.65;
@@ -220,7 +218,7 @@ a.plate:hover::before {
 }
 
 .breathe {
-  animation: 呼吸 9s ease-in-out infinite;
+  animation: slow-breathe 9s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
