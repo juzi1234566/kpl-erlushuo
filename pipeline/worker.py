@@ -73,19 +73,85 @@ def process_meme_card_job(job: dict[str, Any], raw_dir: Path) -> dict[str, Any]:
     }
 
 
+def _next_job(kind: str, bvid: str) -> dict[str, Any]:
+    import uuid
+    from datetime import datetime
+
+    return {
+        "id": str(uuid.uuid4()),
+        "kind": kind,
+        "bvid": bvid,
+        "status": "pending",
+        "attempts": 0,
+        "created_at": datetime.now().isoformat(),
+    }
+
+
+def process_vod_download_job(job: dict[str, Any], raw_dir: Path) -> dict[str, Any]:
+    from vod_pipeline import process_vod_download
+
+    wav = process_vod_download(job["bvid"])
+    return {"wav": str(wav), "next": "vod_transcribe"}
+
+
+def process_vod_transcribe_job(job: dict[str, Any], raw_dir: Path) -> dict[str, Any]:
+    from vod_pipeline import process_vod_transcribe
+
+    segments, speaker_map = process_vod_transcribe(job["bvid"])
+    return {"segments": len(segments), "speaker_map": speaker_map, "next": "vod_analyze"}
+
+
+def process_vod_analyze_job(job: dict[str, Any], raw_dir: Path) -> dict[str, Any]:
+    from vod_pipeline import process_vod_analyze
+
+    result = process_vod_analyze(job["bvid"])
+    return {
+        "teams": len(result.teams),
+        "players": len(result.players),
+        "model": result.model,
+        "error": result.error,
+    }
+
+
+HANDLERS = {
+    "meme_card": process_meme_card_job,
+    "vod_download": process_vod_download_job,
+    "vod_transcribe": process_vod_transcribe_job,
+    "vod_analyze": process_vod_analyze_job,
+}
+
+MAX_ATTEMPTS = 3
+
+
 def run_once(queue_path: Path, raw_dir: Path) -> int:
     q = LocalJobQueue(queue_path)
     pending = q.claim_pending()
     done = 0
+    transcribed_this_round = False
     for job in pending:
-        q.update(job["id"], status="running", attempts=int(job.get("attempts") or 0) + 1)
+        kind = job.get("kind") or "meme_card"
+        handler = HANDLERS.get(kind)
+        if handler is None:
+            q.update(job["id"], status="failed", error=f"未知任务类型 {kind}")
+            continue
+        # 转写吃满 CPU，一轮只跑一个
+        if kind == "vod_transcribe" and transcribed_this_round:
+            continue
+        attempts = int(job.get("attempts") or 0) + 1
+        q.update(job["id"], status="running", attempts=attempts)
         try:
-            out = process_meme_card_job(job, raw_dir)
+            out = handler(job, raw_dir)
             status = "failed" if out.get("error") else "done"
             q.update(job["id"], status=status, result=out)
+            # 成功后自动入队下一环节
+            if status == "done" and out.get("next") and job.get("bvid"):
+                q.enqueue(_next_job(out["next"], job["bvid"]))
+            if kind == "vod_transcribe":
+                transcribed_this_round = True
             done += 1
         except Exception as exc:  # noqa: BLE001
-            q.update(job["id"], status="failed", error=str(exc))
+            status = "failed" if attempts >= MAX_ATTEMPTS else "pending"
+            q.update(job["id"], status=status, error=str(exc))
     return done
 
 

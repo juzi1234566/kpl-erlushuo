@@ -7,12 +7,12 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-import httpx
 from dotenv import load_dotenv
+
+from ai.deepseek_client import DeepSeekClient, parse_json_lenient
 
 load_dotenv()
 
@@ -83,9 +83,10 @@ class MemeGenerator:
         risk_threshold: float = 6.5,
         auto_publish_top: int = 2,
     ) -> None:
-        self.api_key = api_key or os.getenv("DEEPSEEK_API_KEY")
-        self.base_url = (base_url or os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com").rstrip("/")
-        self.model = model or os.getenv("DEEPSEEK_MODEL") or "deepseek-chat"
+        self.client = DeepSeekClient(api_key=api_key, base_url=base_url, model=model, timeout=90.0)
+        self.api_key = self.client.api_key
+        self.base_url = self.client.base_url
+        self.model = self.client.model
         self.risk_threshold = risk_threshold
         self.auto_publish_top = auto_publish_top
 
@@ -144,39 +145,16 @@ class MemeGenerator:
             return GenerationResult(error=str(exc), model=self.model)
 
     def _chat(self, prompt: str) -> tuple[str, dict[str, Any]]:
-        url = f"{self.base_url}/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-        }
-        body = {
-            "model": self.model,
-            "temperature": 0.9,
-            "messages": [
-                {"role": "system", "content": "你是 KPL 玩梗文案助手，只输出合法 JSON。"},
-                {"role": "user", "content": prompt},
-            ],
-        }
-        with httpx.Client(timeout=90.0) as client:
-            resp = client.post(url, headers=headers, json=body)
-            resp.raise_for_status()
-            data = resp.json()
-        text = data["choices"][0]["message"]["content"]
-        usage = data.get("usage") or {}
-        return text, usage
+        return self.client.chat(
+            system="你是 KPL 玩梗文案助手，只输出合法 JSON。",
+            user=prompt,
+            temperature=0.9,
+        )
 
     def _parse_candidates(self, text: str) -> list[dict[str, Any]]:
-        text = text.strip()
-        # 去掉 ```json
-        text = re.sub(r"^```(?:json)?\s*", "", text)
-        text = re.sub(r"\s*```$", "", text)
-        try:
-            data = json.loads(text)
-        except json.JSONDecodeError:
-            m = re.search(r"\[.*\]", text, re.S)
-            if not m:
-                return []
-            data = json.loads(m.group(0))
+        data = parse_json_lenient(text)
+        if data is None:
+            return []
         if isinstance(data, dict):
             data = data.get("items") or data.get("candidates") or [data]
         return [x for x in data if isinstance(x, dict)]

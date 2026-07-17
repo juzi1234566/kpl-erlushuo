@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { readFile } from "fs/promises";
 import path from "path";
 
@@ -66,31 +67,40 @@ export default async function MatchesPage() {
           </div>
 
           <div className="plate enter-2">
-            {summary.matches.slice(0, 30).map((m, i) => (
-              <div
-                key={m.match_id}
-                className={`flex flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm transition-colors duration-500 hover:bg-[rgba(47,122,125,0.07)] ${
-                  i > 0 ? "border-t border-border/30" : ""
-                }`}
-              >
-                <div className="flex items-baseline gap-5">
-                  <span className="tag w-28 shrink-0">{m.start_time?.slice(5, 16)}</span>
-                  <span className="tracking-wider">
-                    {m.teams?.[0] || "待定"}
-                    <span className="no mx-3 text-xs">对</span>
-                    {m.teams?.[1] || "待定"}
-                  </span>
+            {summary.matches.slice(0, 30).map((m, i) => {
+              const row = (
+                <>
+                  <div className="flex items-baseline gap-5">
+                    <span className="tag w-28 shrink-0">{m.start_time?.slice(5, 16)}</span>
+                    <span className="tracking-wider">
+                      {m.teams?.[0] || "待定"}
+                      <span className="no mx-3 text-xs">对</span>
+                      {m.teams?.[1] || "待定"}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-5">
+                    <span className={`tracking-[0.15em] ${m.status === 2 ? "" : "text-faint"}`}>
+                      {m.score}
+                    </span>
+                    <span className={`tag ${m.status === 2 ? "tag--accent" : ""}`}>
+                      {m.status === 2 ? "看观点 →" : "未开始"}
+                    </span>
+                  </div>
+                </>
+              );
+              const cls = `flex flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm transition-colors duration-500 hover:bg-[rgba(47,122,125,0.07)] ${
+                i > 0 ? "border-t border-border/30" : ""
+              }`;
+              return m.status === 2 ? (
+                <Link key={m.match_id} href={`/matches/${m.match_id}`} className={cls}>
+                  {row}
+                </Link>
+              ) : (
+                <div key={m.match_id} className={cls}>
+                  {row}
                 </div>
-                <div className="flex items-baseline gap-5">
-                  <span className={`tracking-[0.15em] ${m.status === 2 ? "" : "text-faint"}`}>
-                    {m.score}
-                  </span>
-                  <span className={`tag ${m.status === 2 ? "tag--accent" : ""}`}>
-                    {m.status === 2 ? "已完赛" : "未开始"}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
