@@ -31,14 +31,14 @@ export default async function MatchesPage() {
     <div className="space-y-12">
       <header className="enter text-center">
         <p className="tag tag--accent mb-4">2026 夏季赛</p>
-        <h1 className="text-3xl tracking-[0.3em]">赛程</h1>
+        <h1 className="text-3xl tracking-[0.15em]">赛程</h1>
         <p className="mt-4 text-xs text-faint">数据来自官方公开赛果</p>
       </header>
 
       {!summary ? (
         <div className="plate enter-1 p-8 text-center">
           <p className="tag tag--accent mb-4">暂无赛程数据</p>
-          <p className="text-sm leading-loose text-muted">
+          <p className="text-[15px] leading-loose text-muted">
             数据管线尚未回填本地赛程，稍后再来看看。
           </p>
         </div>
@@ -82,7 +82,7 @@ export default async function MatchesPage() {
                   </span>
                 </div>
                 <div className="flex items-baseline gap-5">
-                  <span className={`tracking-[0.3em] ${m.status === 2 ? "" : "text-faint"}`}>
+                  <span className={`tracking-[0.15em] ${m.status === 2 ? "" : "text-faint"}`}>
                     {m.score}
                   </span>
                   <span className={`tag ${m.status === 2 ? "tag--accent" : ""}`}>

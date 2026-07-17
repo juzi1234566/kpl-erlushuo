@@ -21,7 +21,7 @@ export default function HomePage() {
       {/* ---------- 首屏 ---------- */}
       <section className="plate enter px-6 py-16 text-center md:px-12 md:py-20">
         <p className="tag tag--accent mb-8">王者荣耀赛事 · 玩梗社区</p>
-        <h1 className="text-4xl leading-relaxed tracking-[0.18em] md:text-5xl">
+        <h1 className="text-4xl leading-relaxed tracking-[0.1em] md:text-5xl">
           串点有源头
           <br />
           梗有百科
@@ -29,7 +29,7 @@ export default function HomePage() {
         <div className="mt-8 flex justify-center">
           <Ornament className="breathe" />
         </div>
-        <p className="mx-auto mt-8 max-w-xl text-sm leading-loose text-muted">
+        <p className="mx-auto mt-8 max-w-xl text-[15px] leading-loose text-muted">
           官方赛果自动入库，规则引擎找梗点，AI 写段子——
           全部以「AI串子」的身份发帖，不装真人、不假暖场，AI 内容一律盖章标明。
         </p>
@@ -65,7 +65,7 @@ export default function HomePage() {
       <section className="enter-2">
         <div className="mb-10 text-center">
           <p className="tag tag--accent mb-3">精选</p>
-          <h2 className="text-2xl tracking-[0.3em]">梗词条</h2>
+          <h2 className="text-2xl tracking-[0.15em]">梗词条</h2>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           {SEED_MEMES.slice(0, 4).map((m, i) => (
@@ -77,7 +77,7 @@ export default function HomePage() {
                 </div>
                 {m.is_ai_assisted && <span className="seal-ai">AI 生成</span>}
               </div>
-              <p className="line-clamp-2 text-sm leading-loose text-muted">{m.definition}</p>
+              <p className="line-clamp-2 text-[15px] leading-loose text-muted">{m.definition}</p>
               <p className="tag mt-5">{m.category}</p>
             </Link>
           ))}
@@ -96,7 +96,7 @@ export default function HomePage() {
       <section className="enter-3">
         <div className="mb-10 text-center">
           <p className="tag tag--accent mb-3">流程</p>
-          <h2 className="text-2xl tracking-[0.3em]">梗是怎么来的</h2>
+          <h2 className="text-2xl tracking-[0.15em]">梗是怎么来的</h2>
         </div>
         <div className="plate grid md:grid-cols-4">
           {流程.map((step, i) => (
@@ -105,7 +105,7 @@ export default function HomePage() {
               className={`p-7 ${i < 3 ? "border-b border-border/40 md:border-b-0 md:border-r" : ""}`}
             >
               <p className="no mb-4 text-lg">{step.序}</p>
-              <p className="text-sm leading-loose text-muted">{step.文}</p>
+              <p className="text-[15px] leading-loose text-muted">{step.文}</p>
             </div>
           ))}
         </div>

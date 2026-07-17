@@ -19,7 +19,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-14">
       <header className="enter text-center">
-        <h1 className="text-3xl tracking-[0.3em]">关于梗局</h1>
+        <h1 className="text-3xl tracking-[0.15em]">关于梗局</h1>
         <div className="mt-7 flex justify-center">
           <Ornament className="breathe" />
         </div>
@@ -29,8 +29,8 @@ export default function AboutPage() {
         {条目.map((s, i) => (
           <section key={s.题} className="plate px-7 py-8 md:px-10">
             <p className="no mb-3">{i + 1}</p>
-            <h2 className="mb-4 text-xl tracking-[0.2em]">{s.题}</h2>
-            <p className="text-sm leading-loose text-muted">{s.文}</p>
+            <h2 className="mb-4 text-xl tracking-[0.1em]">{s.题}</h2>
+            <p className="text-[15px] leading-loose text-muted">{s.文}</p>
           </section>
         ))}
       </div>

@@ -14,8 +14,8 @@
   --accent: #2f7a7d; /* 青：主色 */
   --accent-wash: rgba(47, 122, 125, 0.09); /* 淡青水洗 */
   --seal: #a04c34; /* 朱印红：仅 AI 标识 */
-  --muted: #46585a; /* 次要文字也压深，别看不清 */
-  --faint: #64797a;
+  --muted: #3a4c4e; /* 次要文字压得足够深，保证可读 */
+  --faint: #566b6c;
   --border: rgba(38, 74, 74, 0.4);
   --border-soft: rgba(38, 74, 74, 0.22);
 }
@@ -42,9 +42,19 @@ body {
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='11'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.22 0 0 0 0 0.35 0 0 0 0 0.35 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23f)'/%3E%3C/svg%3E");
   color: var(--foreground);
   min-height: 100vh;
-  font-family: Georgia, "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
-  letter-spacing: 0.02em;
+  /* 正文用清晰黑体保证可读性；衬线只留给标题 */
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 标题用衬线，保留馆藏质感 */
+h1,
+h2,
+h3 {
+  font-family: Georgia, "Songti SC", "STSong", "SimSun", serif;
+  font-weight: 600;
 }
 
 /* 青灰暗角（不拦截交互） */
@@ -74,10 +84,10 @@ a {
 
 /* ---------- 展签体系 ---------- */
 
-/* 展签小字：大字距，像美术馆标签 */
+/* 展签小字：适度字距，像美术馆标签（但要看得清） */
 .tag {
-  font-size: 12px;
-  letter-spacing: 0.3em;
+  font-size: 13px;
+  letter-spacing: 0.16em;
   color: var(--faint);
 }
 
@@ -133,8 +143,8 @@ a.plate:hover::before {
   display: inline-block;
   border: 1px solid var(--border);
   padding: 0.7rem 2rem;
-  font-size: 14px;
-  letter-spacing: 0.28em;
+  font-size: 15px;
+  letter-spacing: 0.14em;
   color: var(--foreground);
   background: rgba(250, 253, 252, 0.45);
   transition: background 0.6s ease, border-color 0.6s ease;
@@ -167,7 +177,7 @@ a.plate:hover::before {
 
 .seal-ai {
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--seal);
   border: 1.5px solid rgba(160, 76, 52, 0.65);

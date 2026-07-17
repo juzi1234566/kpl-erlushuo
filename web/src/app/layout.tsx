@@ -26,7 +26,7 @@ export default function RootLayout({
         <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-sm">
           <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
             <Link href="/" className="flex items-baseline gap-4">
-              <span className="text-xl tracking-[0.5em]">梗局</span>
+              <span className="text-xl tracking-[0.3em]">梗局</span>
               <span className="tag hidden sm:inline">非官方粉丝社区</span>
             </Link>
             <nav className="flex items-center gap-8">

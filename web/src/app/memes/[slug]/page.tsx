@@ -33,7 +33,7 @@ export default async function MemeDetailPage({
       <header className="enter-1 text-center">
         <p className="tag tag--accent mb-5">{meme.category}</p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <h1 className="text-4xl tracking-[0.2em]">{meme.title}</h1>
+          <h1 className="text-4xl tracking-[0.1em]">{meme.title}</h1>
           {meme.is_ai_assisted && <span className="seal-ai">AI 生成</span>}
         </div>
         <div className="mt-7 flex justify-center">

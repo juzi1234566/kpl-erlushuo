@@ -11,7 +11,7 @@ export default async function MemesPage() {
     <div className="space-y-12">
       <header className="enter text-center">
         <p className="tag tag--accent mb-4">共 {memes.length} 条</p>
-        <h1 className="text-3xl tracking-[0.3em]">梗百科</h1>
+        <h1 className="text-3xl tracking-[0.15em]">梗百科</h1>
         <p className="mt-4 text-xs text-faint">
           {fromDb ? "数据实时读取自云端词库" : "暂为本地数据（联库后自动更新）"}
         </p>
@@ -27,7 +27,7 @@ export default async function MemesPage() {
               </div>
               {m.is_ai_assisted && <span className="seal-ai">AI 生成</span>}
             </div>
-            <p className="line-clamp-2 text-sm leading-loose text-muted">{m.definition}</p>
+            <p className="line-clamp-2 text-[15px] leading-loose text-muted">{m.definition}</p>
             <p className="tag mt-5">{m.category}</p>
           </Link>
         ))}
