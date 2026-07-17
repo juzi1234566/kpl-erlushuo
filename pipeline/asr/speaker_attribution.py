@@ -100,15 +100,17 @@ def attribute_speakers(
     confidence = 0.9
     up_spk = top_spk
 
-    # 时长信号不显著（第一二名接近）→ 用响度定夺
+    # 时长信号不显著（第一二名接近）→ 用响度在【时长前二】中定夺
+    # 只比前二：防止某个时长占比极低但响（如片头音乐/采样噪声）的说话人被误判
     if len(ranked) > 1 and top_share - ranked[1][1] < 0.1:
+        top2 = {ranked[0][0], ranked[1][0]}
         if wav_path and wav_path.exists():
             rms = _rms_by_speaker(segments, wav_path)
             detail["rms"] = rms
-            detail["method"] = "duration+rms"
-            if rms:
-                loudest = max(rms.items(), key=lambda kv: kv[1])[0]
-                up_spk = loudest
+            detail["method"] = "duration+rms(top2)"
+            candidates = {k: v for k, v in rms.items() if k in top2}
+            if candidates:
+                up_spk = max(candidates.items(), key=lambda kv: kv[1])[0]
                 confidence = 0.75
         else:
             confidence = 0.6
