@@ -19,3 +19,8 @@ pipeline/data/jobs.json
 web/tsconfig.tsbuildinfo
 .vercel/
 **/.vercel/
+pipeline/data/audio/
+pipeline/data/transcripts/
+pipeline/data/*.log
+pipeline/data/*.log.err
+pipeline/data/jobs.json
