@@ -81,8 +81,8 @@ def main() -> None:
                         "year": x.get("year"),
                         "season": x.get("season"),
                         "status": x.get("status"),
-                        "start_time": x.get("start_time"),
-                        "end_time": x.get("end_time"),
+                        "start_time": x.get("start_time") or None,
+                        "end_time": x.get("end_time") or None,
                         "icon_url": x.get("league_icon"),
                         "raw": x,
                     }
@@ -120,8 +120,9 @@ def main() -> None:
                     "bo": m.get("bo"),
                     "win_camp": m.get("win_camp"),
                     "status": m.get("status"),
-                    "start_time": m.get("start_time"),
-                    "end_time": m.get("end_time"),
+                    # 未开赛场次时间为空串，timestamptz 列须传 null
+                    "start_time": m.get("start_time") or None,
+                    "end_time": m.get("end_time") or None,
                     "stage_name": m.get("match_stage_name"),
                     "stage_desc": m.get("match_stage_desc"),
                     "venue": m.get("match_address"),
