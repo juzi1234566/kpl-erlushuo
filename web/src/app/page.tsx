@@ -1,74 +1,108 @@
 import Link from "next/link";
 import { SEED_MEMES } from "@/lib/seed-memes";
+import HeroCanvas from "@/components/HeroCanvas";
+
+const STATS = [
+  { value: String(SEED_MEMES.length), label: "梗词条" },
+  { value: "90", label: "夏季赛场次" },
+  { value: "30min", label: "赛后出梗窗口" },
+  { value: "100%", label: "AI 内容标识" },
+];
+
+const LOOP = [
+  { code: "01 / INGEST", text: "比赛结束，官方赛果自动入库" },
+  { code: "02 / SIGNAL", text: "规则引擎找梗点：横扫 · 超鬼 · 经济碾压" },
+  { code: "03 / GENERATE", text: "AI 写段子，自评过滤，以 bot 身份发帖" },
+  { code: "04 / COMMUNITY", text: "点亮 · 评论 · 投稿，沉淀进梗百科" },
+];
 
 export default function HomePage() {
   return (
-    <div className="space-y-10">
-      <section className="rounded-2xl border border-border bg-card/60 p-8 md:p-10">
-        <p className="text-accent-2 text-sm mb-3">AI Native · 赛后 30 分钟内出梗</p>
-        <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-          串点有源头，梗有百科
-          <br />
-          <span className="text-muted text-2xl md:text-3xl font-medium">
-            KPL 粉丝的垂直玩梗社区
-          </span>
-        </h1>
-        <p className="mt-4 max-w-2xl text-muted leading-relaxed">
-          官方开放赛果入库 → 规则找梗点 → AI 写段子 → 以「AI串子bot」身份发帖。
-          不做假用户暖场，AI 标识 100% 覆盖。
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href="/memes"
-            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
-          >
-            逛梗百科
-          </Link>
-          <Link
-            href="/matches"
-            className="rounded-full border border-border px-5 py-2.5 text-sm hover:border-accent"
-          >
-            看赛程数据
-          </Link>
+    <div className="space-y-24">
+      {/* ---------- Hero ---------- */}
+      <section className="relative -mx-5 -mt-12 overflow-hidden px-5 pb-24 pt-28 md:pt-36">
+        <HeroCanvas />
+        <div className="relative mx-auto max-w-5xl">
+          <p className="hud-label hud-label--accent enter mb-8 flex items-center gap-3">
+            <span className="dot-live" />
+            AI Native · 赛后 30 分钟出梗
+          </p>
+          <h1 className="enter-1 text-4xl font-extralight leading-[1.25] tracking-wide md:text-6xl">
+            串点有源头
+            <br />
+            <span className="glow-text">梗</span>有百科
+          </h1>
+          <p className="enter-2 mt-8 max-w-xl text-sm leading-loose text-muted md:text-base">
+            KPL 粉丝的垂直玩梗社区。官方赛果入库，规则引擎找梗点，AI
+            写段子——全部以「AI串子bot」的身份发帖，不做假用户暖场。
+          </p>
+          <div className="enter-3 mt-12 flex flex-wrap gap-4">
+            <Link href="/memes" className="btn-ghost">
+              逛梗百科
+            </Link>
+            <Link href="/matches" className="btn-ghost btn-ghost--dim">
+              赛程数据
+            </Link>
+          </div>
         </div>
       </section>
 
+      {/* ---------- 数据行 ---------- */}
+      <section className="enter-3">
+        <div className="hairline mb-10" />
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {STATS.map((s) => (
+            <div key={s.label}>
+              <div className="text-3xl font-extralight tracking-wider text-foreground/90">
+                {s.value}
+              </div>
+              <div className="hud-label mt-2">{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="hairline mt-10" />
+      </section>
+
+      {/* ---------- 精选词条 ---------- */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">种子梗词条</h2>
-          <Link href="/memes" className="text-sm text-accent">
-            全部 →
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <p className="hud-label mb-2">Meme Wiki</p>
+            <h2 className="text-2xl font-extralight tracking-wide">梗词条</h2>
+          </div>
+          <Link
+            href="/memes"
+            className="hud-label transition-colors duration-500 hover:text-foreground"
+          >
+            全部 {SEED_MEMES.length} 条 →
           </Link>
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {SEED_MEMES.slice(0, 4).map((m) => (
-            <Link
-              key={m.slug}
-              href={`/memes/${m.slug}`}
-              className="rounded-xl border border-border bg-card/40 p-4 hover:border-accent/60 transition"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-medium">{m.title}</h3>
-                {m.is_ai_assisted && (
-                  <span className="text-[10px] rounded px-1.5 py-0.5 bg-accent/20 text-accent">
-                    AI 辅助
-                  </span>
-                )}
+            <Link key={m.slug} href={`/memes/${m.slug}`} className="card group block p-6">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h3 className="text-lg font-light tracking-wide">{m.title}</h3>
+                {m.is_ai_assisted && <span className="badge-ai">AI</span>}
               </div>
-              <p className="text-sm text-muted line-clamp-2">{m.definition}</p>
+              <p className="line-clamp-2 text-sm leading-relaxed text-muted">{m.definition}</p>
+              <p className="hud-label mt-4">{m.category}</p>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card/30 p-5 text-sm text-muted">
-        <h2 className="text-foreground font-medium mb-2">MVP 核心闭环</h2>
-        <ol className="list-decimal list-inside space-y-1">
-          <li>比赛结束 → 赛事管线入库</li>
-          <li>规则引擎算梗点（横扫 / 超鬼 / 经济碾压…）</li>
-          <li>DeepSeek 生成候选 → 自评 → bot 发帖</li>
-          <li>用户点亮 / 评论 / 投稿 → 沉淀百科</li>
-        </ol>
+      {/* ---------- 核心闭环 ---------- */}
+      <section>
+        <p className="hud-label mb-2">Pipeline</p>
+        <h2 className="mb-10 text-2xl font-extralight tracking-wide">从赛果到梗的闭环</h2>
+        <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-4">
+          {LOOP.map((step) => (
+            <div key={step.code} className="bg-background p-6">
+              <p className="hud-label hud-label--accent mb-4">{step.code}</p>
+              <p className="text-sm leading-relaxed text-muted">{step.text}</p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

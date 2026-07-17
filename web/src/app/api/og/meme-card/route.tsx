@@ -7,7 +7,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const title = searchParams.get("title") || "今日串点";
   const body = searchParams.get("body") || "AI 生成的 KPL 玩梗卡片";
-  const watermark = "梗局 · AI 生成 · 非官方";
 
   return new ImageResponse(
     (
@@ -18,46 +17,91 @@ export async function GET(req: NextRequest) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "linear-gradient(145deg, #120f24 0%, #0b0d12 45%, #0d241f 100%)",
-          color: "#e8eaf0",
-          padding: 48,
+          background:
+            "radial-gradient(900px 450px at 50% -15%, rgba(77,216,255,0.12), transparent 60%), #05060a",
+          color: "rgba(235,240,248,0.92)",
+          padding: 56,
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>
-            <span style={{ color: "#7c5cff" }}>梗</span>局
+        {/* 顶部 HUD */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+            <div style={{ fontSize: 30, fontWeight: 300, letterSpacing: 8 }}>
+              <span style={{ color: "#4dd8ff" }}>梗</span>局
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                letterSpacing: 5,
+                color: "rgba(235,240,248,0.3)",
+                textTransform: "uppercase",
+              }}
+            >
+              Unofficial · Fan Community
+            </div>
           </div>
           <div
             style={{
-              fontSize: 16,
-              color: "#7c5cff",
-              border: "1px solid #7c5cff",
-              borderRadius: 999,
-              padding: "6px 14px",
+              fontSize: 14,
+              letterSpacing: 4,
+              textTransform: "uppercase",
+              color: "rgba(138,107,255,0.9)",
+              border: "1px solid rgba(138,107,255,0.4)",
+              borderRadius: 4,
+              padding: "8px 18px",
             }}
           >
             AI 生成
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ fontSize: 52, fontWeight: 800, lineHeight: 1.15 }}>{title}</div>
-          <div style={{ fontSize: 28, color: "#b7bdd0", lineHeight: 1.4, maxWidth: 900 }}>
+        {/* 主体 */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          <div
+            style={{
+              fontSize: 60,
+              fontWeight: 300,
+              letterSpacing: 4,
+              lineHeight: 1.2,
+              color: "#eef4fa",
+            }}
+          >
+            {title}
+          </div>
+          <div
+            style={{
+              fontSize: 26,
+              fontWeight: 300,
+              color: "rgba(235,240,248,0.5)",
+              lineHeight: 1.55,
+              maxWidth: 920,
+            }}
+          >
             {body.slice(0, 120)}
           </div>
         </div>
 
+        {/* 底部 HUD */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
-            fontSize: 18,
-            color: "#8b93a7",
+            alignItems: "center",
+            fontSize: 14,
+            letterSpacing: 4,
+            textTransform: "uppercase",
+            color: "rgba(235,240,248,0.28)",
           }}
         >
-          <span>{watermark}</span>
-          <span>fans meme community</span>
+          <span>梗局 · AI Generated · 非官方</span>
+          <span style={{ color: "rgba(77,216,255,0.6)" }}>KPL-MEME</span>
         </div>
       </div>
     ),

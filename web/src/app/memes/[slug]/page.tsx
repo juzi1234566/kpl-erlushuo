@@ -21,35 +21,41 @@ export default async function MemeDetailPage({
   const og = `/api/og/meme-card?title=${encodeURIComponent(meme.title)}&body=${encodeURIComponent(meme.definition)}`;
 
   return (
-    <article className="space-y-6 max-w-2xl">
-      <Link href="/memes" className="text-sm text-muted hover:text-foreground">
-        ← 返回梗百科
+    <article className="mx-auto max-w-2xl space-y-12">
+      <Link
+        href="/memes"
+        className="hud-label enter inline-block transition-colors duration-500 hover:text-foreground"
+      >
+        ← Meme Wiki
       </Link>
-      <header className="space-y-2">
-        <div className="flex flex-wrap gap-2 items-center">
-          <h1 className="text-3xl font-bold">{meme.title}</h1>
-          {meme.is_ai_assisted && (
-            <span className="text-xs rounded px-2 py-0.5 bg-accent/20 text-accent">AI 辅助整理</span>
-          )}
-          {meme.fromDb && (
-            <span className="text-xs rounded px-2 py-0.5 border border-border text-muted">DB</span>
-          )}
+
+      <header className="enter-1 space-y-4">
+        <p className="hud-label hud-label--accent">{meme.category}</p>
+        <div className="flex flex-wrap items-center gap-4">
+          <h1 className="text-4xl font-extralight tracking-wide">{meme.title}</h1>
+          {meme.is_ai_assisted && <span className="badge-ai">AI 辅助整理</span>}
         </div>
-        <p className="text-muted text-sm">分类 · {meme.category}</p>
+        <div className="hairline" />
       </header>
-      <section className="rounded-xl border border-border bg-card/50 p-5 space-y-3">
-        <h2 className="font-medium">释义</h2>
-        <p className="leading-relaxed">{meme.definition}</p>
-        <h2 className="font-medium pt-2">出处 / 背景</h2>
-        <p className="text-muted leading-relaxed">{meme.origin_story}</p>
+
+      <section className="enter-2 space-y-10">
+        <div>
+          <p className="hud-label mb-4">Definition · 释义</p>
+          <p className="text-lg font-light leading-loose">{meme.definition}</p>
+        </div>
+        <div>
+          <p className="hud-label mb-4">Origin · 出处</p>
+          <p className="leading-loose text-muted">{meme.origin_story}</p>
+        </div>
       </section>
-      <section>
-        <h2 className="font-medium mb-2">分享卡片预览</h2>
+
+      <section className="enter-3">
+        <p className="hud-label mb-4">Share Card · 分享卡片</p>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={og}
           alt={`${meme.title} 卡片`}
-          className="w-full max-w-xl rounded-xl border border-border"
+          className="card w-full max-w-xl"
         />
       </section>
     </article>

@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   description: "AI 驱动的 KPL 垂直玩梗社区（非官方）。赛后自动生梗、梗百科、选手页。",
 };
 
+const NAV = [
+  { href: "/memes", label: "梗百科", code: "WIKI" },
+  { href: "/matches", label: "赛程", code: "MATCHES" },
+  { href: "/about", label: "关于", code: "ABOUT" },
+];
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,31 +32,40 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <header className="border-b border-border/80 backdrop-blur sticky top-0 z-20 bg-background/70">
-          <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
-            <Link href="/" className="font-semibold tracking-wide">
-              <span className="text-accent">梗</span>局
-              <span className="ml-2 text-xs text-muted font-normal">非官方粉丝社区</span>
+        <header className="sticky top-0 z-40 border-b border-border bg-background/60 backdrop-blur-md">
+          <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
+            <Link href="/" className="flex items-baseline gap-3">
+              <span className="text-lg font-extralight tracking-[0.3em]">
+                <span className="glow-text">梗</span>局
+              </span>
+              <span className="hud-label hidden sm:inline">Unofficial · Fan Community</span>
             </Link>
-            <nav className="flex gap-4 text-sm text-muted">
-              <Link href="/memes" className="hover:text-foreground">
-                梗百科
-              </Link>
-              <Link href="/matches" className="hover:text-foreground">
-                赛程
-              </Link>
-              <Link href="/about" className="hover:text-foreground">
-                关于
-              </Link>
+            <nav className="flex items-center gap-7">
+              {NAV.map((n) => (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  className="hud-label transition-colors duration-500 hover:text-foreground"
+                >
+                  {n.label}
+                </Link>
+              ))}
             </nav>
           </div>
         </header>
-        <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
-        <footer className="border-t border-border/80 mt-16">
-          <div className="mx-auto max-w-5xl px-4 py-8 text-xs text-muted space-y-2">
-            <p>梗局是粉丝自发社区，与腾讯 / KPL / 俱乐部无隶属关系。</p>
-            <p>
-              AI 内容统一标注「AI 生成」。举报邮箱：report@example.com（上线前替换）。
+
+        <main className="mx-auto min-h-[70vh] max-w-5xl px-5 py-12">{children}</main>
+
+        <footer className="mt-24">
+          <div className="hairline" />
+          <div className="mx-auto max-w-5xl space-y-4 px-5 py-10">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="hud-label">梗局 · Geng Ju</span>
+              <span className="hud-label">KPL-MEME / MVP v0.1</span>
+            </div>
+            <p className="text-xs leading-relaxed text-faint">
+              粉丝自发社区，与腾讯 / KPL / 俱乐部无隶属关系。AI 内容统一标注「AI
+              生成」。举报邮箱：report@example.com（上线前替换）。
             </p>
           </div>
         </footer>
