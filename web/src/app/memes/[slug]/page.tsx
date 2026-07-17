@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMemeBySlug } from "@/lib/memes";
 import { SEED_MEMES } from "@/lib/seed-memes";
+import Ornament from "@/components/Ornament";
 
 export const dynamic = "force-dynamic";
 
@@ -24,39 +25,38 @@ export default async function MemeDetailPage({
     <article className="mx-auto max-w-2xl space-y-12">
       <Link
         href="/memes"
-        className="hud-label enter inline-block transition-colors duration-500 hover:text-foreground"
+        className="tag enter inline-block transition-colors duration-500 hover:text-foreground"
       >
-        ← Meme Wiki
+        ← 返回梗百科
       </Link>
 
-      <header className="enter-1 space-y-4">
-        <p className="hud-label hud-label--accent">{meme.category}</p>
-        <div className="flex flex-wrap items-center gap-4">
-          <h1 className="text-4xl font-extralight tracking-wide">{meme.title}</h1>
-          {meme.is_ai_assisted && <span className="badge-ai">AI 辅助整理</span>}
+      <header className="enter-1 text-center">
+        <p className="tag tag--ochre mb-5">{meme.category} 部</p>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <h1 className="text-4xl tracking-[0.2em]">{meme.title}</h1>
+          {meme.is_ai_assisted && <span className="seal-ai">AI 生成</span>}
         </div>
-        <div className="hairline" />
+        <div className="mt-7 flex justify-center">
+          <Ornament className="breathe" />
+        </div>
       </header>
 
-      <section className="enter-2 space-y-10">
+      <section className="plate enter-2 space-y-10 px-7 py-9 md:px-10">
         <div>
-          <p className="hud-label mb-4">Definition · 释义</p>
-          <p className="text-lg font-light leading-loose">{meme.definition}</p>
+          <p className="tag tag--ochre mb-4">释义</p>
+          <p className="text-lg leading-loose">{meme.definition}</p>
         </div>
+        <div className="hairline" />
         <div>
-          <p className="hud-label mb-4">Origin · 出处</p>
+          <p className="tag tag--ochre mb-4">出处考</p>
           <p className="leading-loose text-muted">{meme.origin_story}</p>
         </div>
       </section>
 
       <section className="enter-3">
-        <p className="hud-label mb-4">Share Card · 分享卡片</p>
+        <p className="tag tag--ochre mb-4 text-center">分享卡样</p>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={og}
-          alt={`${meme.title} 卡片`}
-          className="card w-full max-w-xl"
-        />
+        <img src={og} alt={`${meme.title} 分享卡片`} className="plate w-full" />
       </section>
     </article>
   );

@@ -6,7 +6,7 @@ export const runtime = "edge";
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const title = searchParams.get("title") || "今日串点";
-  const body = searchParams.get("body") || "AI 生成的 KPL 玩梗卡片";
+  const body = searchParams.get("body") || "赛后自动整理的玩梗词条";
 
   return new ImageResponse(
     (
@@ -15,93 +15,98 @@ export async function GET(req: NextRequest) {
           height: "100%",
           width: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
           background:
-            "radial-gradient(900px 450px at 50% -15%, rgba(77,216,255,0.12), transparent 60%), #05060a",
-          color: "rgba(235,240,248,0.92)",
-          padding: 56,
-          fontFamily: "sans-serif",
+            "radial-gradient(700px 500px at 20% 15%, rgba(140,106,60,0.10), transparent 65%), radial-gradient(600px 420px at 85% 80%, rgba(111,127,82,0.12), transparent 60%), #e9e4d0",
+          padding: 34,
+          fontFamily: "serif",
         }}
       >
-        {/* 顶部 HUD */}
+        {/* 细双线图版边框 */}
         <div
           style={{
+            flex: 1,
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            border: "1.5px solid rgba(107,95,62,0.55)",
+            padding: 7,
           }}
         >
-          <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
-            <div style={{ fontSize: 30, fontWeight: 300, letterSpacing: 8 }}>
-              <span style={{ color: "#4dd8ff" }}>梗</span>局
-            </div>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              border: "1px solid rgba(107,95,62,0.32)",
+              padding: "40px 56px",
+            }}
+          >
+            {/* 顶部 */}
             <div
               style={{
-                fontSize: 13,
-                letterSpacing: 5,
-                color: "rgba(235,240,248,0.3)",
-                textTransform: "uppercase",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              Unofficial · Fan Community
+              <div style={{ display: "flex", alignItems: "baseline", gap: 20 }}>
+                <div style={{ fontSize: 34, letterSpacing: 16, color: "#3d4232" }}>梗局</div>
+                <div style={{ fontSize: 15, letterSpacing: 6, color: "#8d8a6e" }}>
+                  非官方 · 粉丝社群
+                </div>
+              </div>
+              <div
+                style={{
+                  fontSize: 17,
+                  letterSpacing: 3,
+                  color: "#a04c34",
+                  border: "2px solid rgba(160,76,52,0.65)",
+                  padding: "6px 14px",
+                  transform: "rotate(-3deg)",
+                  background: "rgba(160,76,52,0.06)",
+                }}
+              >
+                AI 生成
+              </div>
+            </div>
+
+            {/* 主体 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
+              <div
+                style={{
+                  fontSize: 62,
+                  letterSpacing: 10,
+                  lineHeight: 1.25,
+                  color: "#3d4232",
+                }}
+              >
+                {title}
+              </div>
+              <div
+                style={{
+                  fontSize: 26,
+                  color: "#6a6a52",
+                  lineHeight: 1.7,
+                  maxWidth: 900,
+                }}
+              >
+                {body.slice(0, 110)}
+              </div>
+            </div>
+
+            {/* 落款 */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: 16,
+                letterSpacing: 5,
+                color: "#8c6a3c",
+              }}
+            >
+              <span>梗局 · 玩梗图志 · 非官方</span>
+              <span>丙午年夏</span>
             </div>
           </div>
-          <div
-            style={{
-              fontSize: 14,
-              letterSpacing: 4,
-              textTransform: "uppercase",
-              color: "rgba(138,107,255,0.9)",
-              border: "1px solid rgba(138,107,255,0.4)",
-              borderRadius: 4,
-              padding: "8px 18px",
-            }}
-          >
-            AI 生成
-          </div>
-        </div>
-
-        {/* 主体 */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div
-            style={{
-              fontSize: 60,
-              fontWeight: 300,
-              letterSpacing: 4,
-              lineHeight: 1.2,
-              color: "#eef4fa",
-            }}
-          >
-            {title}
-          </div>
-          <div
-            style={{
-              fontSize: 26,
-              fontWeight: 300,
-              color: "rgba(235,240,248,0.5)",
-              lineHeight: 1.55,
-              maxWidth: 920,
-            }}
-          >
-            {body.slice(0, 120)}
-          </div>
-        </div>
-
-        {/* 底部 HUD */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            fontSize: 14,
-            letterSpacing: 4,
-            textTransform: "uppercase",
-            color: "rgba(235,240,248,0.28)",
-          }}
-        >
-          <span>梗局 · AI Generated · 非官方</span>
-          <span style={{ color: "rgba(77,216,255,0.6)" }}>KPL-MEME</span>
         </div>
       </div>
     ),

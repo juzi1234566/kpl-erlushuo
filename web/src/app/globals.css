@@ -1,20 +1,24 @@
 @import "tailwindcss";
 
 /* ============================================================
-   梗局 · frontier 审美体系
-   近黑背景 / 单主色发光（青）/ 细体 HUD 排版 / 一切慢动效
+   梗局 · 馆藏图鉴审美（「高级感」skill · 博物志图版模式）
+   陈年纸底 / 褪色颜料色 / 衬线展签排版 / 手工痕迹 / 极慢
+   色板锁死：纸 #e9e4d0 · 墨 #3d4232 · 橄榄绿 #6f7f52
+             赭石 #8c6a3c · 朱印红 #a04c34（仅 AI 标识）
    ============================================================ */
 
 :root {
-  --background: #05060a; /* 冷色温近黑，绝不用纯黑 */
-  --foreground: rgba(235, 240, 248, 0.92);
-  --card: rgba(255, 255, 255, 0.02);
-  --accent: #4dd8ff; /* 唯一主色：青 */
-  --accent-2: #8a6bff; /* 辅色：紫，仅 AI 标识使用 */
-  --muted: rgba(235, 240, 248, 0.45);
-  --faint: rgba(235, 240, 248, 0.28);
-  --danger: #ff4d6d;
-  --border: rgba(255, 255, 255, 0.08);
+  --background: #e9e4d0; /* 米绿陈年纸 */
+  --foreground: #3d4232; /* 深青灰墨，绝不用纯黑 */
+  --card: rgba(255, 252, 240, 0.35);
+  --accent: #6f7f52; /* 橄榄浅绿：唯一主色 */
+  --accent-wash: rgba(111, 127, 82, 0.1); /* 浅绿水洗 */
+  --ochre: #8c6a3c; /* 赭石：编号与落款 */
+  --seal: #a04c34; /* 朱印红：仅 AI 标识 */
+  --muted: #6a6a52;
+  --faint: #8d8a6e;
+  --border: rgba(107, 95, 62, 0.45);
+  --border-soft: rgba(107, 95, 62, 0.28);
 }
 
 @theme inline {
@@ -22,13 +26,12 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-accent: var(--accent);
-  --color-accent-2: var(--accent-2);
+  --color-ochre: var(--ochre);
+  --color-seal: var(--seal);
   --color-muted: var(--muted);
   --color-faint: var(--faint);
-  --color-danger: var(--danger);
   --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif-cn: Georgia, "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
 }
 
 html {
@@ -36,26 +39,25 @@ html {
 }
 
 body {
-  /* 顶部一层极淡的主色辉光，其余交给黑暗 */
-  background:
-    radial-gradient(1100px 520px at 50% -12%, rgba(77, 216, 255, 0.055), transparent 62%),
-    var(--background);
+  /* 纸张三层：大块水渍 + 纤维噪点 + 基色。无一处干净平色 */
+  background-color: var(--background);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0038' numOctaves='4' seed='5'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.42 0 0 0 0 0.38 0 0 0 0 0.22 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='1100' height='1100' filter='url(%23b)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='11'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.38 0 0 0 0 0.33 0 0 0 0 0.18 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23f)'/%3E%3C/svg%3E");
   color: var(--foreground);
   min-height: 100vh;
-  font-family: var(--font-geist-sans), "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.01em;
+  font-family: Georgia, "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
+  letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
 }
 
-/* 暗角：电影感的收边（不拦截交互） */
+/* 暖褐暗角（不拦截交互） */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 50;
-  background: radial-gradient(120% 90% at 50% 40%, transparent 60%, rgba(0, 0, 0, 0.42) 100%);
+  z-index: 30;
+  background: radial-gradient(115% 90% at 50% 42%, transparent 58%, rgba(74, 58, 32, 0.16) 100%);
 }
 
 a {
@@ -64,117 +66,125 @@ a {
 }
 
 ::selection {
-  background: rgba(77, 216, 255, 0.25);
-  color: #fff;
+  background: rgba(111, 127, 82, 0.3);
+  color: #2e3325;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  scrollbar-color: rgba(107, 95, 62, 0.35) transparent;
 }
 
-/* ---------- HUD 组件 ---------- */
+/* ---------- 展签体系 ---------- */
 
-/* 小标签：全大写 + 大字距 + 低透明度 */
-.hud-label {
-  text-transform: uppercase;
-  letter-spacing: 0.35em;
-  font-size: 11px;
-  font-weight: 300;
+/* 展签小字：大字距、赭褐、像美术馆标签 */
+.tag {
+  font-size: 12px;
+  letter-spacing: 0.32em;
   color: var(--faint);
 }
 
-.hud-label--accent {
-  color: rgba(77, 216, 255, 0.75);
+.tag--ochre {
+  color: var(--ochre);
 }
 
-/* 1px 分隔细线 */
+/* 编号：斜体衬线，图鉴式 */
+.no {
+  font-style: italic;
+  color: var(--ochre);
+  opacity: 0.85;
+}
+
+/* 细线：褪色墨色 */
 .hairline {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  background: linear-gradient(90deg, transparent, var(--border-soft) 18%, var(--border-soft) 82%, transparent);
   border: none;
 }
 
-/* 卡片：极暗底 + 细边，hover 时缓慢亮起主色辉光 */
-.card {
+/* ---------- 图版卡片：细双线边框 ---------- */
+
+.plate {
+  position: relative;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  transition:
-    border-color 0.5s ease,
-    box-shadow 0.5s ease,
-    background 0.5s ease;
+  transition: background 0.6s ease, border-color 0.6s ease;
 }
 
-.card:hover {
-  border-color: rgba(77, 216, 255, 0.32);
-  background: rgba(77, 216, 255, 0.025);
-  box-shadow:
-    0 0 28px rgba(77, 216, 255, 0.07),
-    inset 0 0 20px rgba(77, 216, 255, 0.03);
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--border-soft);
+  pointer-events: none;
+  transition: border-color 0.6s ease;
 }
 
-/* 幽灵按钮：细边框，hover 发光，不做实底 */
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  border: 1px solid rgba(77, 216, 255, 0.35);
-  color: rgba(77, 216, 255, 0.9);
-  padding: 0.65rem 1.6rem;
-  font-size: 13px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  border-radius: 3px;
-  transition: all 0.5s ease;
+a.plate:hover {
+  background: var(--accent-wash);
+  border-color: rgba(92, 107, 66, 0.65);
 }
 
-.btn-ghost:hover {
-  border-color: rgba(77, 216, 255, 0.8);
-  box-shadow:
-    0 0 24px rgba(77, 216, 255, 0.18),
-    inset 0 0 14px rgba(77, 216, 255, 0.08);
-  text-shadow: 0 0 12px rgba(77, 216, 255, 0.6);
+a.plate:hover::before {
+  border-color: rgba(92, 107, 66, 0.4);
 }
 
-.btn-ghost--dim {
-  border-color: var(--border);
-  color: var(--muted);
-}
+/* ---------- 展签按钮 ---------- */
 
-.btn-ghost--dim:hover {
-  border-color: rgba(255, 255, 255, 0.3);
+.btn-plate {
+  position: relative;
+  display: inline-block;
+  border: 1px solid var(--border);
+  padding: 0.7rem 2rem;
+  font-size: 14px;
+  letter-spacing: 0.3em;
   color: var(--foreground);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
-  text-shadow: none;
+  background: rgba(255, 252, 240, 0.3);
+  transition: background 0.6s ease, border-color 0.6s ease;
 }
 
-/* AI 标识徽标（辅色紫，站内唯一允许的第二种彩色） */
-.badge-ai {
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(138, 107, 255, 0.85);
-  border: 1px solid rgba(138, 107, 255, 0.35);
-  border-radius: 3px;
-  padding: 2px 8px;
+.btn-plate::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--border-soft);
+  pointer-events: none;
+}
+
+.btn-plate:hover {
+  background: var(--accent-wash);
+  border-color: rgba(92, 107, 66, 0.65);
+}
+
+.btn-plate--green {
+  background: rgba(111, 127, 82, 0.14);
+  border-color: rgba(92, 107, 66, 0.6);
+}
+
+.btn-plate--green:hover {
+  background: rgba(111, 127, 82, 0.24);
+}
+
+/* ---------- 朱印：AI 标识（全站唯一的红） ---------- */
+
+.seal-ai {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--seal);
+  border: 1.5px solid rgba(160, 76, 52, 0.65);
+  padding: 2px 7px;
+  transform: rotate(-2.5deg);
   white-space: nowrap;
+  background: rgba(160, 76, 52, 0.06);
 }
 
-/* 主色发光文字 */
-.glow-text {
-  color: var(--accent);
-  text-shadow:
-    0 0 18px rgba(77, 216, 255, 0.55),
-    0 0 60px rgba(77, 216, 255, 0.25);
-}
+/* ---------- 动效：只允许极慢 ---------- */
 
-/* ---------- 动效 ---------- */
-
-@keyframes fade-up {
+@keyframes 淡入 {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -182,41 +192,35 @@ a {
   }
 }
 
-@keyframes breathe {
+.enter {
+  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.enter-1 {
+  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) 0.25s both;
+}
+
+.enter-2 {
+  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+}
+
+.enter-3 {
+  animation: 淡入 2s cubic-bezier(0.4, 0, 0.2, 1) 0.75s both;
+}
+
+/* 花线的呼吸：极缓慢的隐现 */
+@keyframes 呼吸 {
   0%,
   100% {
-    opacity: 0.55;
+    opacity: 0.65;
   }
   50% {
     opacity: 1;
   }
 }
 
-/* 入场：黑场渐显，慢 */
-.enter {
-  animation: fade-up 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.enter-1 {
-  animation: fade-up 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
-}
-
-.enter-2 {
-  animation: fade-up 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
-}
-
-.enter-3 {
-  animation: fade-up 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
-}
-
-/* 状态点：呼吸的主色光点 */
-.dot-live {
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(77, 216, 255, 0.9);
-  animation: breathe 3.2s ease-in-out infinite;
+.breathe {
+  animation: 呼吸 9s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -224,7 +228,7 @@ a {
   .enter-1,
   .enter-2,
   .enter-3,
-  .dot-live {
+  .breathe {
     animation: none;
   }
 }
