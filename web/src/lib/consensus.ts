@@ -1,74 +1,72 @@
-import type { DbCommentaryInsight, DbVodSource } from "./insights";
+import type { CasterOpinion } from "./insights";
 
-export type ConsensusItem = {
-  kind: "共识好评" | "共识差评" | "两极分化";
-  subject_name: string;
-  subject_type: "team" | "player";
-  detail: string; // 如「可温★5 · 时间★4」或「可温★5 vs 时间★2」
-  casterCount: number;
+export type RatingCell = {
+  rating: number | null;
+  sentiment: string;
 };
 
-/** 跨主播聚合：全员同向 = 共识；好评差评并存 = 两极分化 */
-export function buildConsensus(
-  vods: DbVodSource[],
-  insightsByVod: Record<string, DbCommentaryInsight[]>,
-): ConsensusItem[] {
-  const casterOf: Record<string, string> = {};
-  for (const v of vods) casterOf[v.id] = v.caster_name || v.up_name || "解说";
+export type RatingRow = {
+  subject_name: string;
+  subject_type: "team" | "player";
+  cells: Record<string, RatingCell>; // 解说名 → 打分
+  verdict: string; // 一句总体评价
+  avg: number; // 排序用
+};
 
-  type Vote = { caster: string; sentiment: string; rating: number | null };
-  const bySubject: Record<string, { type: "team" | "player"; votes: Vote[] }> = {};
+export type RatingTable = {
+  casters: string[];
+  rows: RatingRow[];
+};
 
-  for (const [vodId, list] of Object.entries(insightsByVod)) {
-    for (const i of list) {
+/** 一句总体评价：从各家情绪分布直接得出 */
+function overallVerdict(cells: RatingCell[]): string {
+  const goods = cells.filter((c) => c.sentiment === "好评").length;
+  const bads = cells.filter((c) => c.sentiment === "差评").length;
+  const n = cells.length;
+  if (goods === n && n >= 2) return "一致好评";
+  if (bads === n && n >= 2) return "一致差评";
+  if (goods > 0 && bads > 0) return "褒贬不一";
+  if (goods > 0) return "偏好评";
+  if (bads > 0) return "偏差评";
+  return "中规中矩";
+}
+
+/** 打分表：行=战队/选手，列=各解说的整场星级 */
+export function buildRatingTable(opinions: CasterOpinion[]): RatingTable {
+  const casters = opinions.map((o) => o.vod.caster_name || o.vod.up_name || "解说");
+
+  const rowMap: Record<string, RatingRow> = {};
+  for (const o of opinions) {
+    const caster = o.vod.caster_name || o.vod.up_name || "解说";
+    for (const i of o.series) {
       if (i.subject_type !== "team" && i.subject_type !== "player") continue;
       const key = `${i.subject_type}:${i.subject_name}`;
-      (bySubject[key] ||= { type: i.subject_type, votes: [] }).votes.push({
-        caster: casterOf[vodId] || "解说",
-        sentiment: i.sentiment,
-        rating: i.rating,
+      const row = (rowMap[key] ||= {
+        subject_name: i.subject_name,
+        subject_type: i.subject_type,
+        cells: {},
+        verdict: "",
+        avg: 0,
       });
+      row.cells[caster] = { rating: i.rating, sentiment: i.sentiment };
     }
   }
 
-  const items: ConsensusItem[] = [];
-  const fmt = (v: Vote) => `${v.caster}${v.rating ? `★${v.rating}` : ""}`;
-
-  for (const [key, { type, votes }] of Object.entries(bySubject)) {
-    if (votes.length < 2) continue; // 单一来源谈不上共识
-    const name = key.split(":")[1];
-    const goods = votes.filter((v) => v.sentiment === "好评");
-    const bads = votes.filter((v) => v.sentiment === "差评");
-
-    if (goods.length && bads.length) {
-      items.push({
-        kind: "两极分化",
-        subject_name: name,
-        subject_type: type,
-        detail: `${goods.map(fmt).join("、")} vs ${bads.map(fmt).join("、")}`,
-        casterCount: votes.length,
-      });
-    } else if (goods.length === votes.length) {
-      items.push({
-        kind: "共识好评",
-        subject_name: name,
-        subject_type: type,
-        detail: votes.map(fmt).join(" · "),
-        casterCount: votes.length,
-      });
-    } else if (bads.length === votes.length) {
-      items.push({
-        kind: "共识差评",
-        subject_name: name,
-        subject_type: type,
-        detail: votes.map(fmt).join(" · "),
-        casterCount: votes.length,
-      });
-    }
+  const rows = Object.values(rowMap);
+  for (const row of rows) {
+    const cells = Object.values(row.cells);
+    row.verdict = overallVerdict(cells);
+    const rated = cells.filter((c) => c.rating);
+    row.avg = rated.length
+      ? rated.reduce((s, c) => s + (c.rating || 0), 0) / rated.length
+      : 0;
   }
 
-  // 两极分化最有戏，排前面；同类按参与主播数降序
-  const order = { 两极分化: 0, 共识差评: 1, 共识好评: 2 };
-  items.sort((a, b) => order[a.kind] - order[b.kind] || b.casterCount - a.casterCount);
-  return items;
+  // 战队在前；同类按平均分降序
+  rows.sort(
+    (a, b) =>
+      (a.subject_type === "team" ? 0 : 1) - (b.subject_type === "team" ? 0 : 1) ||
+      b.avg - a.avg,
+  );
+  return { casters, rows };
 }

@@ -33,7 +33,7 @@ export type DbVodSource = {
 export type InsightQuote = {
   text: string;
   start_ms: number;
-  verdict?: string; // 预测：应验 / 打脸 / 未验证
+  verdict?: string;
   note?: string;
   context?: string;
 };
@@ -47,6 +47,7 @@ export type InsightExtra = {
   highlight?: string;
   lowlight?: string;
   main?: { name: string; reason: string }[];
+  games_brief?: { game_no: number; one_line: string }[];
 };
 
 export type DbCommentaryInsight = {
@@ -62,28 +63,140 @@ export type DbCommentaryInsight = {
   extra: InsightExtra | null;
 };
 
+/** 一位解说对一场比赛的完整观点：系列赛总评 + 分局详情 */
+export type CasterOpinion = {
+  vod: DbVodSource;
+  series: DbCommentaryInsight[]; // 整场层（overall/team/player/blame，含 games_brief）
+  games: { game_no: number; page: number; rows: DbCommentaryInsight[] }[];
+};
+
 export type MatchInsights = {
   match: DbMatch | null;
   teams: Record<string, DbTeam>;
-  vods: DbVodSource[];
-  insightsByVod: Record<string, DbCommentaryInsight[]>;
+  opinions: CasterOpinion[];
 };
 
-/** 本地开发回退：读 pipeline/data/insights/*.json（分析脚本产物），无需云端表 */
-async function fetchLocalInsights(matchId: string): Promise<Pick<MatchInsights, "vods" | "insightsByVod">> {
-  const empty = { vods: [] as DbVodSource[], insightsByVod: {} as Record<string, DbCommentaryInsight[]> };
+// ---------- JSON → 行 的映射 ----------
+
+type RawSection = {
+  sentiment?: string;
+  rating?: number;
+  summary?: string;
+  headline?: string;
+  verdict?: string;
+  points?: string[];
+  quotes?: InsightQuote[];
+} | null;
+
+function makeRow(
+  vodId: string,
+  matchId: string,
+  subject_type: DbCommentaryInsight["subject_type"],
+  subject_name: string,
+  item: RawSection,
+  extra: InsightExtra = {},
+  idSuffix = "",
+): DbCommentaryInsight | null {
+  if (!item) return null;
+  const summary =
+    item.headline || item.verdict || item.summary || (item.points || [])[0] || "";
+  if (!summary && !(item.quotes || []).length) return null;
+  return {
+    id: `${vodId}-${subject_type}-${subject_name}${idSuffix}`,
+    vod_id: vodId,
+    match_id: matchId,
+    subject_type,
+    subject_name,
+    sentiment: (item.sentiment as DbCommentaryInsight["sentiment"]) || "中立",
+    rating: item.rating ?? null,
+    summary,
+    quotes: item.quotes || [],
+    extra,
+  };
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function sectionRows(vodId: string, matchId: string, d: any, idSuffix = ""): DbCommentaryInsight[] {
+  const rows: DbCommentaryInsight[] = [];
+  const push = (r: DbCommentaryInsight | null) => r && rows.push(r);
+  if (d.bp)
+    push(
+      makeRow(vodId, matchId, "bp", "BP与阵容", d.bp, {
+        headline: d.bp.headline,
+        points: d.bp.points || [],
+        predictions: d.bp.predictions || [],
+      }, idSuffix),
+    );
+  if (d.flow) {
+    const flowSummary = [
+      d.flow.early && `【前期】${d.flow.early}`,
+      d.flow.mid && `【中期】${d.flow.mid}`,
+      d.flow.late && `【后期】${d.flow.late}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    push(
+      makeRow(vodId, matchId, "flow", "局势走向", { ...d.flow, summary: flowSummary }, {
+        turning_points: d.flow.turning_points || [],
+      }, idSuffix),
+    );
+  }
+  if (d.overall)
+    push(
+      makeRow(vodId, matchId, "overall", "整场比赛", d.overall, {
+        headline: d.overall.headline,
+        points: d.overall.points || [],
+        games_brief: d.games_brief || [],
+      }, idSuffix),
+    );
+  for (const t of d.teams || [])
+    push(
+      makeRow(vodId, matchId, "team", t.name, t, {
+        verdict: t.verdict,
+        points: t.points || [],
+      }, idSuffix),
+    );
+  for (const p of d.players || [])
+    push(
+      makeRow(vodId, matchId, "player", p.name, p, {
+        verdict: p.verdict,
+        points: p.points || [],
+        highlight: p.highlight,
+        lowlight: p.lowlight,
+      }, idSuffix),
+    );
+  if (d.blame)
+    push(
+      makeRow(vodId, matchId, "blame", "赛后分锅", { ...d.blame, summary: d.blame.headline }, {
+        headline: d.blame.headline,
+        main: d.blame.main || [],
+      }, idSuffix),
+    );
+  if (d.golden_quotes?.length)
+    push(
+      makeRow(vodId, matchId, "golden", "金句时刻", {
+        summary: "金句",
+        sentiment: "中立",
+        quotes: d.golden_quotes,
+      }, {}, idSuffix),
+    );
+  return rows;
+}
+
+/** 本地 JSON（pipeline/data/insights）→ CasterOpinion；兼容旧单局格式 */
+async function fetchLocalOpinions(matchId: string): Promise<CasterOpinion[]> {
   try {
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");
     const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
     const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
-    const vods: DbVodSource[] = [];
-    const insightsByVod: Record<string, DbCommentaryInsight[]> = {};
+    const byCaster: Record<string, { opinion: CasterOpinion; gameCount: number }> = {};
+
     for (const f of files) {
       const d = JSON.parse(await readFile(path.join(dir, f), "utf-8"));
       if (String(d.match_id) !== String(matchId)) continue;
       const vodId = `local-${f}`;
-      vods.push({
+      const vod: DbVodSource = {
         id: vodId,
         bvid: d.bvid,
         title: `${d.caster} 二路解说`,
@@ -92,100 +205,55 @@ async function fetchLocalInsights(matchId: string): Promise<Pick<MatchInsights, 
         page_start: Array.isArray(d.pages) ? d.pages[0] : 1,
         pubdate: null,
         duration_s: null,
-      });
-      const rows: DbCommentaryInsight[] = [];
-      const push = (
-        subject_type: DbCommentaryInsight["subject_type"],
-        subject_name: string,
-        item: {
-          sentiment?: string;
-          rating?: number;
-          summary?: string;
-          quotes?: InsightQuote[];
-        } | null,
-        extra: InsightExtra = {},
-      ) => {
-        if (!item?.summary) return;
-        rows.push({
-          id: `${vodId}-${subject_type}-${subject_name}`,
-          vod_id: vodId,
-          match_id: String(matchId),
-          subject_type,
-          subject_name,
-          sentiment: (item.sentiment as DbCommentaryInsight["sentiment"]) || "中立",
-          rating: item.rating ?? null,
-          summary: item.summary,
-          quotes: item.quotes || [],
-          extra,
-        });
       };
-      // headline/verdict/points 落 extra；summary 仅作兜底文本
-      const summarize = (item: {
-        headline?: string;
-        verdict?: string;
-        summary?: string;
-        points?: string[];
-      }) => item?.headline || item?.verdict || item?.summary || (item?.points || [])[0] || "";
-      if (d.bp)
-        push("bp", "BP与阵容", { ...d.bp, summary: summarize(d.bp) }, {
-          headline: d.bp.headline,
-          points: d.bp.points || [],
-          predictions: d.bp.predictions || [],
-        });
-      if (d.flow) {
-        const flowSummary = [
-          d.flow.early && `【前期】${d.flow.early}`,
-          d.flow.mid && `【中期】${d.flow.mid}`,
-          d.flow.late && `【后期】${d.flow.late}`,
-        ]
-          .filter(Boolean)
-          .join("\n");
-        push("flow", "局势走向", { ...d.flow, summary: flowSummary }, {
-          turning_points: d.flow.turning_points || [],
-        });
+
+      let opinion: CasterOpinion;
+      let gameCount: number;
+      if (Array.isArray(d.games)) {
+        // 新格式：分局 + 系列赛汇总
+        const series = d.series
+          ? sectionRows(vodId, String(matchId), {
+              ...d.series,
+              games_brief: d.series.games_brief,
+            })
+          : [];
+        const games = d.games.map((g: any) => ({
+          game_no: g.game_no,
+          page: g.page,
+          rows: sectionRows(vodId, String(matchId), g, `-g${g.game_no}`),
+        }));
+        opinion = { vod, series, games };
+        gameCount = d.games.length;
+      } else {
+        // 旧格式：单局当整场——顶层内容既当 series 也当第 1 局
+        const rows = sectionRows(vodId, String(matchId), d);
+        opinion = {
+          vod,
+          series: rows.filter((r) =>
+            ["overall", "team", "player", "blame"].includes(r.subject_type),
+          ),
+          games: [{ game_no: 1, page: vod.page_start || 1, rows }],
+        };
+        gameCount = 1;
       }
-      if (d.overall)
-        push("overall", "整场比赛", { ...d.overall, summary: summarize(d.overall) }, {
-          headline: d.overall.headline,
-          points: d.overall.points || [],
-        });
-      for (const t of d.teams || [])
-        push("team", t.name, { ...t, summary: summarize(t) }, {
-          verdict: t.verdict,
-          points: t.points || [],
-        });
-      for (const p of d.players || [])
-        push("player", p.name, { ...p, summary: summarize(p) }, {
-          verdict: p.verdict,
-          points: p.points || [],
-          highlight: p.highlight,
-          lowlight: p.lowlight,
-        });
-      if (d.blame)
-        push("blame", "赛后分锅", { ...d.blame, summary: summarize(d.blame) }, {
-          headline: d.blame.headline,
-          main: d.blame.main || [],
-        });
-      if (d.golden_quotes?.length)
-        push("golden", "金句时刻", {
-          summary: "本场解说金句",
-          sentiment: "中立",
-          quotes: d.golden_quotes,
-        });
-      insightsByVod[vodId] = rows;
+
+      const prev = byCaster[d.caster];
+      if (!prev || gameCount > prev.gameCount) {
+        byCaster[d.caster] = { opinion, gameCount };
+      }
     }
-    return { vods, insightsByVod };
+    return Object.values(byCaster).map((x) => x.opinion);
   } catch {
-    return empty;
+    return [];
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-/** 比赛详情 + 二路观点（云端优先，本地 JSON 回退） */
+/** 比赛详情 + 各解说观点（比赛信息走云端，观点当前本地模式） */
 export async function fetchMatchInsights(matchId: string): Promise<MatchInsights> {
-  const empty: MatchInsights = { match: null, teams: {}, vods: [], insightsByVod: {} };
+  const empty: MatchInsights = { match: null, teams: {}, opinions: [] };
   const sb = getSupabase();
   if (!sb) return empty;
-
   try {
     const { data: match } = await sb
       .from("matches")
@@ -202,34 +270,8 @@ export async function fetchMatchInsights(matchId: string): Promise<MatchInsights
     const teams: Record<string, DbTeam> = {};
     for (const t of teamRows || []) teams[t.id] = t;
 
-    const { data: insights, error } = await sb
-      .from("commentary_insights")
-      .select("id,vod_id,match_id,subject_type,subject_name,sentiment,rating,summary,quotes")
-      .eq("match_id", matchId)
-      .eq("status", "approved");
-
-    // 云端表不存在或无数据 → 本地 JSON 回退（开发模式）
-    if (error || !insights?.length) {
-      const local = await fetchLocalInsights(matchId);
-      return { match: match as DbMatch, teams, ...local };
-    }
-
-    const vodIds = [...new Set(insights.map((i) => i.vod_id))];
-    let vods: DbVodSource[] = [];
-    if (vodIds.length) {
-      const { data: vodRows } = await sb
-        .from("vod_sources")
-        .select("id,bvid,title,up_name,caster_name,page_start,pubdate,duration_s")
-        .in("id", vodIds);
-      vods = vodRows || [];
-    }
-
-    const insightsByVod: Record<string, DbCommentaryInsight[]> = {};
-    for (const i of insights) {
-      (insightsByVod[i.vod_id] ||= []).push(i as DbCommentaryInsight);
-    }
-
-    return { match: match as DbMatch, teams, vods, insightsByVod };
+    const opinions = await fetchLocalOpinions(matchId);
+    return { match: match as DbMatch, teams, opinions };
   } catch {
     return empty;
   }
@@ -250,7 +292,7 @@ export function fmtTimestamp(ms: number): string {
   return `${m}:${String(sec).padStart(2, "0")}`;
 }
 
-// ---------- 选手聚合 ----------
+// ---------- 选手档案 ----------
 
 export type PlayerReview = {
   match_id: string;
@@ -264,59 +306,23 @@ export type PlayerReview = {
   quotes: InsightQuote[];
 };
 
-/** 某选手的跨场次跨主播历史评价（云端优先，本地 JSON 回退） */
+/** 某选手的跨场次跨主播评价（整场层优先；本地模式） */
 export async function fetchPlayerReviews(name: string): Promise<PlayerReview[]> {
-  const sb = getSupabase();
-  // 云端
-  if (sb) {
-    try {
-      const { data, error } = await sb
-        .from("commentary_insights")
-        .select("match_id,subject_name,sentiment,rating,summary,quotes,extra,vod_id,status")
-        .eq("subject_type", "player")
-        .eq("subject_name", name)
-        .eq("status", "approved");
-      if (!error && data?.length) {
-        const vodIds = [...new Set(data.map((i) => i.vod_id))];
-        const { data: vodRows } = await sb
-          .from("vod_sources")
-          .select("id,bvid,caster_name,up_name,page_start")
-          .in("id", vodIds);
-        const vodMap: Record<string, { bvid: string; caster: string; page_start: number | null }> = {};
-        for (const v of vodRows || [])
-          vodMap[v.id] = {
-            bvid: v.bvid,
-            caster: v.caster_name || v.up_name || "解说",
-            page_start: v.page_start,
-          };
-        return data.map((i) => ({
-          match_id: i.match_id,
-          caster: vodMap[i.vod_id]?.caster || "解说",
-          bvid: vodMap[i.vod_id]?.bvid || "",
-          page_start: vodMap[i.vod_id]?.page_start ?? null,
-          sentiment: i.sentiment,
-          rating: i.rating,
-          verdict: i.extra?.verdict || i.summary || "",
-          points: i.extra?.points || [],
-          quotes: i.quotes || [],
-        }));
-      }
-    } catch {
-      /* fall through to local */
-    }
-  }
-  // 本地回退
   try {
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");
     const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
     const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
-    const out: PlayerReview[] = [];
+    const best: Record<string, { review: PlayerReview; games: number }> = {};
     for (const f of files) {
-      const d = JSON.parse(await readFile(path.join(dir, f), "utf-8"));
-      for (const pl of d.players || []) {
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      const d: any = JSON.parse(await readFile(path.join(dir, f), "utf-8"));
+      const key = `${d.match_id}:${d.caster}`;
+      const games = Array.isArray(d.games) ? d.games.length : 1;
+      const source = d.series || d; // 新格式取系列赛层，旧格式取顶层
+      for (const pl of source?.players || []) {
         if (pl.name !== name) continue;
-        out.push({
+        const review: PlayerReview = {
           match_id: String(d.match_id),
           caster: d.caster,
           bvid: d.bvid,
@@ -326,11 +332,64 @@ export async function fetchPlayerReviews(name: string): Promise<PlayerReview[]> 
           verdict: pl.verdict || "",
           points: pl.points || [],
           quotes: pl.quotes || [],
-        });
+        };
+        if (!best[key] || games > best[key].games) best[key] = { review, games };
       }
     }
-    return out;
+    return Object.values(best).map((x) => x.review);
   } catch {
     return [];
   }
+}
+
+// ---------- 首页：已出观点的比赛 ----------
+
+export type AnalyzedMatch = {
+  match_id: string;
+  casters: string[];
+  match: DbMatch | null;
+  teamNames: string[];
+};
+
+export async function listAnalyzedMatches(): Promise<AnalyzedMatch[]> {
+  const byMatch: Record<string, Set<string>> = {};
+  try {
+    const { readdir, readFile } = await import("fs/promises");
+    const path = await import("path");
+    const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    for (const f of files) {
+      const d = JSON.parse(await readFile(path.join(dir, f), "utf-8"));
+      if (d.match_id) (byMatch[String(d.match_id)] ||= new Set()).add(d.caster);
+    }
+  } catch {
+    /* 目录不存在则为空 */
+  }
+
+  const sb = getSupabase();
+  const out: AnalyzedMatch[] = [];
+  for (const id of Object.keys(byMatch)) {
+    let match: DbMatch | null = null;
+    const teamNames: string[] = [];
+    if (sb) {
+      try {
+        const { data } = await sb
+          .from("matches")
+          .select("id,team1_id,team2_id,score1,score2,bo,status,start_time,stage_name,stage_desc")
+          .eq("id", id)
+          .maybeSingle();
+        match = (data as DbMatch) || null;
+        if (match) {
+          const tids = [match.team1_id, match.team2_id].filter(Boolean) as string[];
+          const { data: ts } = await sb.from("teams").select("id,name").in("id", tids);
+          for (const tid of tids) teamNames.push(ts?.find((t) => t.id === tid)?.name || "");
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    out.push({ match_id: id, casters: [...byMatch[id]], match, teamNames });
+  }
+  out.sort((a, b) => (b.match?.start_time || "").localeCompare(a.match?.start_time || ""));
+  return out;
 }

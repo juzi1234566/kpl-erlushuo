@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
             {/* 顶部 */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 18 }}>
-                <div style={{ fontSize: 30, letterSpacing: 14, color: "#263433" }}>梗局</div>
+                <div style={{ fontSize: 28, letterSpacing: 8, color: "#263433" }}>KPL二路说</div>
                 <div style={{ fontSize: 16, letterSpacing: 4, color: "#64797a" }}>金句时刻</div>
               </div>
               <div
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
               }}
             >
               <span>—— {caster}</span>
-              <span style={{ color: "#64797a" }}>{match || "王者荣耀职业赛事 · 二路解说"}</span>
+              <span style={{ color: "#64797a" }}>{match || "KPL 二路解说观点聚合"}</span>
             </div>
           </div>
         </div>

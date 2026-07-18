@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchMatchInsights } from "@/lib/insights";
-import { buildConsensus } from "@/lib/consensus";
+import { buildRatingTable } from "@/lib/consensus";
 import UpOpinionCard from "@/components/insights/UpOpinionCard";
 import ConsensusBar from "@/components/insights/ConsensusBar";
 import Ornament from "@/components/Ornament";
@@ -23,14 +23,13 @@ export default async function MatchDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { match, teams, vods, insightsByVod } = await fetchMatchInsights(id);
+  const { match, teams, opinions } = await fetchMatchInsights(id);
   if (!match) notFound();
 
   const t1 = match.team1_id ? teams[match.team1_id] : null;
   const t2 = match.team2_id ? teams[match.team2_id] : null;
   const finished = match.status === 2;
-  const vodsWithInsights = vods.filter((v) => (insightsByVod[v.id] || []).length > 0);
-  const consensus = buildConsensus(vodsWithInsights, insightsByVod);
+  const ratingTable = buildRatingTable(opinions);
 
   return (
     <div className="space-y-14">
@@ -66,13 +65,13 @@ export default async function MatchDetailPage({
           </div>
         </div>
 
-        {consensus.length > 0 && (
+        {ratingTable.rows.length > 0 && (
           <div className="mb-6">
-            <ConsensusBar items={consensus} />
+            <ConsensusBar table={ratingTable} />
           </div>
         )}
 
-        {vodsWithInsights.length === 0 ? (
+        {opinions.length === 0 ? (
           <div className="plate p-10 text-center">
             <p className="text-[15px] leading-loose text-muted">
               这场比赛的二路解说观点还没上架。
@@ -82,8 +81,8 @@ export default async function MatchDetailPage({
           </div>
         ) : (
           <div className="space-y-6">
-            {vodsWithInsights.map((v) => (
-              <UpOpinionCard key={v.id} vod={v} insights={insightsByVod[v.id] || []} />
+            {opinions.map((o) => (
+              <UpOpinionCard key={o.vod.id} opinion={o} />
             ))}
           </div>
         )}

@@ -2,16 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { DbCommentaryInsight, DbVodSource, InsightQuote } from "@/lib/insights";
+import type { CasterOpinion, DbCommentaryInsight, InsightQuote } from "@/lib/insights";
 import { biliUrl, fmtTimestamp } from "@/lib/insights";
 
 function SentimentTag({ sentiment }: { sentiment: string }) {
   const cls =
-    sentiment === "好评"
-      ? "tag tag--accent"
-      : sentiment === "差评"
-        ? "tag text-seal"
-        : "tag";
+    sentiment === "好评" ? "tag tag--accent" : sentiment === "差评" ? "tag text-seal" : "tag";
   return <span className={cls}>{sentiment}</span>;
 }
 
@@ -38,7 +34,6 @@ function TsLink({ bvid, page, ms }: { bvid: string; page: number | null; ms: num
   );
 }
 
-/** 引用行：原话 + 跳转时间戳 */
 function QuoteLine({
   bvid,
   page,
@@ -56,7 +51,6 @@ function QuoteLine({
   );
 }
 
-/** 要点列表：短句 bullet，扫一眼抓重点 */
 function Points({ points }: { points?: string[] }) {
   if (!points?.length) return null;
   return (
@@ -71,46 +65,167 @@ function Points({ points }: { points?: string[] }) {
   );
 }
 
-/** 板块钩子：一句话结论，加粗放大 */
-function Headline({ text }: { text?: string }) {
-  if (!text) return null;
-  return <p className="mb-3 text-base font-medium leading-snug">{text}</p>;
-}
-
-export default function UpOpinionCard({
-  vod,
-  insights,
+/** 单局全部板块（BP/局势/选手/分锅/金句） */
+function GameSections({
+  rows,
+  bvid,
+  page,
 }: {
-  vod: DbVodSource;
-  insights: DbCommentaryInsight[];
+  rows: DbCommentaryInsight[];
+  bvid: string;
+  page: number | null;
 }) {
-  const get = (t: DbCommentaryInsight["subject_type"]) =>
-    insights.find((i) => i.subject_type === t);
+  const get = (t: DbCommentaryInsight["subject_type"]) => rows.find((i) => i.subject_type === t);
   const bp = get("bp");
   const flow = get("flow");
-  const overall = get("overall");
   const blame = get("blame");
   const golden = get("golden");
-  const teams = insights.filter((i) => i.subject_type === "team");
-  const players = insights.filter((i) => i.subject_type === "player");
-  const page = vod.page_start;
-  const [expanded, setExpanded] = useState(false);
+  const players = rows.filter((i) => i.subject_type === "player");
+
+  return (
+    <div className="space-y-6">
+      {bp && (
+        <section>
+          <div className="mb-2 flex items-center gap-3">
+            <p className="tag tag--accent">BP 与阵容</p>
+            <Rating value={bp.rating} />
+          </div>
+          {bp.extra?.headline && <p className="mb-2 text-[15px] font-medium">{bp.extra.headline}</p>}
+          <Points points={bp.extra?.points} />
+          {(bp.extra?.predictions || []).map((q, i) => (
+            <div key={i} className="mt-2 flex flex-wrap items-baseline gap-2 text-sm">
+              <span
+                className={
+                  q.verdict === "打脸" ? "seal-ai" : q.verdict === "应验" ? "tag tag--accent" : "tag"
+                }
+              >
+                {q.verdict === "打脸" ? "毒奶打脸" : q.verdict === "应验" ? "预言应验" : "待验证"}
+              </span>
+              <span className="text-muted">
+                「{q.text}」
+                <TsLink bvid={bvid} page={page} ms={q.start_ms} />
+              </span>
+              {q.note && <span className="text-xs text-faint">{q.note}</span>}
+            </div>
+          ))}
+        </section>
+      )}
+
+      {flow && (
+        <section>
+          <p className="tag tag--accent mb-2">局势走向</p>
+          <div className="space-y-1.5">
+            {flow.summary.split("\n").map((line, i) => {
+              const m = line.match(/^【(.+?)】(.*)$/);
+              return (
+                <div key={i} className="flex gap-3 text-[15px] leading-relaxed">
+                  <span className="no w-10 shrink-0">{m ? m[1] : ""}</span>
+                  <span>{m ? m[2] : line}</span>
+                </div>
+              );
+            })}
+          </div>
+          {(flow.extra?.turning_points || []).map((tp, i) => (
+            <div key={i} className="mt-1.5 flex gap-2 text-sm">
+              <span className="seal-ai shrink-0">转折</span>
+              <span>
+                {tp.desc}
+                {tp.quote && <TsLink bvid={bvid} page={page} ms={tp.quote.start_ms} />}
+              </span>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {players.length > 0 && (
+        <section>
+          <p className="tag tag--accent mb-3">本局选手</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {players.map((p) => (
+              <div key={p.id} className="rounded border border-border/40 p-3.5">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <span className="font-semibold">{p.subject_name}</span>
+                  <SentimentTag sentiment={p.sentiment} />
+                  <Rating value={p.rating} />
+                </div>
+                {p.extra?.verdict && <p className="mb-1.5 text-sm font-medium">{p.extra.verdict}</p>}
+                <Points points={p.extra?.points} />
+                {(p.quotes || []).slice(0, 2).map((q, i) => (
+                  <div key={i} className="mt-1.5">
+                    <QuoteLine bvid={bvid} page={page} quote={q} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {blame && (
+        <section>
+          <p className="tag tag--accent mb-2">本局分锅</p>
+          {blame.extra?.headline && (
+            <p className="mb-1.5 text-[15px] font-medium">{blame.extra.headline}</p>
+          )}
+          {(blame.extra?.main || []).map((m, i) => (
+            <p key={i} className="text-sm text-muted">
+              <span className="seal-ai mr-2">锅</span>
+              <span className="font-semibold text-foreground">{m.name}</span> — {m.reason}
+            </p>
+          ))}
+        </section>
+      )}
+
+      {golden && (golden.quotes || []).length > 0 && (
+        <section>
+          <p className="tag tag--accent mb-2">金句</p>
+          <div className="space-y-1.5">
+            {(golden.quotes || []).map((q, i) => (
+              <div key={i}>
+                <QuoteLine bvid={bvid} page={page} quote={q} />
+                <p className="ml-4 mt-0.5 flex gap-3 text-xs text-faint">
+                  {q.context && <span>{q.context}</span>}
+                  <a
+                    href={`/api/og/quote-card?text=${encodeURIComponent(q.text)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tag--accent underline-offset-4 hover:underline"
+                  >
+                    生成分享卡 →
+                  </a>
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+export default function UpOpinionCard({ opinion }: { opinion: CasterOpinion }) {
+  const { vod, series, games } = opinion;
+  const [openGame, setOpenGame] = useState<number | null>(null);
+
+  const get = (t: DbCommentaryInsight["subject_type"]) => series.find((i) => i.subject_type === t);
+  const overall = get("overall");
+  const blame = get("blame");
+  const seriesPlayers = series.filter((i) => i.subject_type === "player");
+  const briefs = overall?.extra?.games_brief || [];
 
   return (
     <div className="plate p-6 md:p-9">
-      {/* 头部：主播名 + 一句话总评 */}
-      <div className="mb-6 border-b border-border/40 pb-5">
+      {/* 头部：主播 + 整场结论 */}
+      <div className="mb-5 border-b border-border/40 pb-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h3 className="text-xl tracking-wider">
-              {vod.caster_name || vod.up_name || "二路解说"}
-            </h3>
+            <h3 className="text-xl tracking-wider">{vod.caster_name || vod.up_name || "解说"}</h3>
             {overall && <SentimentTag sentiment={overall.sentiment} />}
             {overall && <Rating value={overall.rating} />}
             <span className="seal-ai">AI 提取</span>
           </div>
           <a
-            href={biliUrl(vod.bvid, undefined, page)}
+            href={biliUrl(vod.bvid, undefined, vod.page_start)}
             target="_blank"
             rel="noopener noreferrer"
             className="tag tag--accent transition-colors duration-500 hover:text-foreground"
@@ -121,216 +236,72 @@ export default function UpOpinionCard({
         {overall?.extra?.headline && (
           <p className="mt-3 text-lg font-medium leading-snug">{overall.extra.headline}</p>
         )}
-        {overall && <div className="mt-2"><Points points={overall.extra?.points} /></div>}
+        {overall && (
+          <div className="mt-2">
+            <Points points={overall.extra?.points} />
+          </div>
+        )}
+        {blame?.extra?.headline && (
+          <p className="mt-3 text-[15px]">
+            <span className="seal-ai mr-2">整场的锅</span>
+            <span className="text-muted">{blame.extra.headline}</span>
+          </p>
+        )}
       </div>
 
-      {/* 折叠态：只露分锅钩子，一眼看到最有戏的结论 */}
-      {!expanded && blame?.extra?.headline && (
-        <p className="mb-4 text-[15px]">
-          <span className="seal-ai mr-2">锅</span>
-          <span className="text-muted">{blame.extra.headline}</span>
-        </p>
+      {/* 整场选手总评 */}
+      {seriesPlayers.length > 0 && (
+        <section className="mb-6">
+          <p className="tag tag--accent mb-3">整场选手总评</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {seriesPlayers.map((p) => (
+              <div key={p.id} className="rounded border border-border/40 p-3.5">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/players/${encodeURIComponent(p.subject_name)}`}
+                    className="font-semibold underline-offset-4 hover:underline"
+                  >
+                    {p.subject_name}
+                  </Link>
+                  <SentimentTag sentiment={p.sentiment} />
+                  <Rating value={p.rating} />
+                </div>
+                {p.extra?.verdict && <p className="mb-1.5 text-sm font-medium">{p.extra.verdict}</p>}
+                <Points points={p.extra?.points} />
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
-      {!expanded ? (
-        <button
-          type="button"
-          onClick={() => setExpanded(true)}
-          className="btn-plate w-full text-center"
-        >
-          展开完整赛评（BP · 局势 · {players.length} 位选手 · 分锅 · 金句）
-        </button>
-      ) : (
-      <div className="space-y-8">
-        {/* BP */}
-        {bp && (
-          <section>
-            <div className="mb-2 flex items-center gap-3">
-              <p className="tag tag--accent">BP 与阵容</p>
-              <Rating value={bp.rating} />
-            </div>
-            <Headline text={bp.extra?.headline} />
-            <Points points={bp.extra?.points} />
-            {(bp.extra?.predictions || []).length > 0 && (
-              <div className="mt-3 space-y-2">
-                {(bp.extra?.predictions || []).map((q, i) => (
-                  <div key={i} className="flex flex-wrap items-baseline gap-2 text-sm">
-                    <span
-                      className={
-                        q.verdict === "打脸"
-                          ? "seal-ai"
-                          : q.verdict === "应验"
-                            ? "tag tag--accent"
-                            : "tag"
-                      }
-                    >
-                      {q.verdict === "打脸" ? "毒奶打脸" : q.verdict === "应验" ? "预言应验" : "待验证"}
-                    </span>
-                    <span className="text-muted">
-                      「{q.text}」
-                      <TsLink bvid={vod.bvid} page={page} ms={q.start_ms} />
-                    </span>
-                    {q.note && <span className="text-xs text-faint">{q.note}</span>}
+      {/* 分局：一局一行，点开看该局详情 */}
+      <section>
+        <p className="tag tag--accent mb-3">逐局详情</p>
+        <div className="space-y-2">
+          {games.map((g) => {
+            const brief = briefs.find((b) => b.game_no === g.game_no)?.one_line;
+            const open = openGame === g.game_no;
+            return (
+              <div key={g.game_no} className="rounded border border-border/40">
+                <button
+                  type="button"
+                  onClick={() => setOpenGame(open ? null : g.game_no)}
+                  className="flex w-full flex-wrap items-baseline gap-3 px-4 py-3 text-left transition-colors duration-300 hover:bg-[rgba(47,122,125,0.06)]"
+                >
+                  <span className="no shrink-0">第{g.game_no}局</span>
+                  <span className="flex-1 text-[15px] text-muted">{brief || "点开看本局详情"}</span>
+                  <span className="tag">{open ? "收起" : "展开"}</span>
+                </button>
+                {open && (
+                  <div className="border-t border-border/30 px-4 py-5">
+                    <GameSections rows={g.rows} bvid={vod.bvid} page={g.page} />
                   </div>
-                ))}
+                )}
               </div>
-            )}
-          </section>
-        )}
-
-        {/* 局势走向：三阶段各一行 */}
-        {flow && (
-          <section>
-            <p className="tag tag--accent mb-3">局势走向</p>
-            <div className="space-y-2">
-              {flow.summary.split("\n").map((line, i) => {
-                const m = line.match(/^【(.+?)】(.*)$/);
-                return (
-                  <div key={i} className="flex gap-3 text-[15px] leading-relaxed">
-                    <span className="no w-10 shrink-0">{m ? m[1] : ""}</span>
-                    <span>{m ? m[2] : line}</span>
-                  </div>
-                );
-              })}
-            </div>
-            {(flow.extra?.turning_points || []).length > 0 && (
-              <div className="mt-3 space-y-1.5">
-                {(flow.extra?.turning_points || []).map((tp, i) => (
-                  <div key={i} className="flex gap-2 text-sm">
-                    <span className="seal-ai shrink-0">转折</span>
-                    <span>
-                      {tp.desc}
-                      {tp.quote && <TsLink bvid={vod.bvid} page={page} ms={tp.quote.start_ms} />}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* 选手：结论加粗 + 要点 + 高光低谷 */}
-        {players.length > 0 && (
-          <section>
-            <p className="tag tag--accent mb-4">选手点评</p>
-            <div className="grid gap-5 md:grid-cols-2">
-              {players.map((p) => (
-                <div key={p.id} className="rounded border border-border/40 p-4">
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-                    <Link
-                      href={`/players/${encodeURIComponent(p.subject_name)}`}
-                      className="text-base font-semibold tracking-wide underline-offset-4 hover:underline"
-                    >
-                      {p.subject_name}
-                    </Link>
-                    <SentimentTag sentiment={p.sentiment} />
-                    <Rating value={p.rating} />
-                  </div>
-                  {p.extra?.verdict && (
-                    <p className="mb-2 text-[15px] font-medium leading-snug">{p.extra.verdict}</p>
-                  )}
-                  <Points points={p.extra?.points} />
-                  {(p.extra?.highlight || p.extra?.lowlight) && (
-                    <div className="mt-2 space-y-1 text-sm">
-                      {p.extra?.highlight && (
-                        <p>
-                          <span className="tag tag--accent mr-2">高光</span>
-                          <span className="text-muted">{p.extra.highlight}</span>
-                        </p>
-                      )}
-                      {p.extra?.lowlight && (
-                        <p>
-                          <span className="tag text-seal mr-2">低谷</span>
-                          <span className="text-muted">{p.extra.lowlight}</span>
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  {(p.quotes || []).length > 0 && (
-                    <div className="mt-2.5 space-y-1.5">
-                      {(p.quotes || []).map((q, i) => (
-                        <QuoteLine key={i} bvid={vod.bvid} page={page} quote={q} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 战队 */}
-        {teams.length > 0 && (
-          <section>
-            <p className="tag tag--accent mb-4">战队表现</p>
-            <div className="grid gap-5 md:grid-cols-2">
-              {teams.map((t) => (
-                <div key={t.id}>
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-                    <span className="text-base font-semibold tracking-wide">{t.subject_name}</span>
-                    <SentimentTag sentiment={t.sentiment} />
-                    <Rating value={t.rating} />
-                  </div>
-                  {t.extra?.verdict && (
-                    <p className="mb-2 text-[15px] font-medium leading-snug">{t.extra.verdict}</p>
-                  )}
-                  <Points points={t.extra?.points} />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 分锅 */}
-        {blame && (
-          <section>
-            <p className="tag tag--accent mb-3">赛后分锅</p>
-            <Headline text={blame.extra?.headline} />
-            <div className="space-y-1.5">
-              {(blame.extra?.main || []).map((m, i) => (
-                <p key={i} className="text-[15px]">
-                  <span className="seal-ai mr-2">锅</span>
-                  <span className="font-semibold">{m.name}</span>
-                  <span className="text-muted"> — {m.reason}</span>
-                </p>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 金句 */}
-        {golden && (golden.quotes || []).length > 0 && (
-          <section>
-            <p className="tag tag--accent mb-3">金句时刻</p>
-            <div className="space-y-2">
-              {(golden.quotes || []).map((q, i) => (
-                <div key={i}>
-                  <QuoteLine bvid={vod.bvid} page={page} quote={q} />
-                  <p className="ml-4 mt-0.5 flex gap-3 text-xs text-faint">
-                    {q.context && <span>{q.context}</span>}
-                    <a
-                      href={`/api/og/quote-card?text=${encodeURIComponent(q.text)}&caster=${encodeURIComponent(vod.caster_name || vod.up_name || "二路解说")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="tag--accent underline-offset-4 hover:underline"
-                    >
-                      生成分享卡 →
-                    </a>
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-        <button
-          type="button"
-          onClick={() => setExpanded(false)}
-          className="btn-plate w-full text-center"
-        >
-          收起
-        </button>
-      </div>
-      )}
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }

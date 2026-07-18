@@ -1,0 +1,5 @@
+@echo off
+cd /d C:\Users\18413\Desktop\kpl-meme\pipeline
+.venv\Scripts\python.exe -m scripts.analyze_collection --bvid BV1TcNd6UEV6 --pages 1-5 --caster 可温 --up-name kpl二路 --mid 333332650 --match-id 2026071703 >> data\bo5_kewen.log 2>&1
+.venv\Scripts\python.exe -m scripts.analyze_collection --bvid BV1TcNd6UEV6 --pages 6-10 --caster 时间 --up-name kpl二路 --mid 333332650 --match-id 2026071703 >> data\bo5_shijian.log 2>&1
+echo ALL_BO5_DONE >> data\bo5_all.log

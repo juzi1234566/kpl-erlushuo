@@ -126,6 +126,41 @@ REDUCE_USER_TEMPLATE = """【比赛信息】（含最终比分，预测应验/�
 }}"""
 
 
+SERIES_SYSTEM = """你是资深电竞编辑。同一位解说对一场 BO5 每局的分析已经整理好，
+现在汇总成【整场系列赛】总评。写作铁律与单局一致：
+- 禁止「解说认为/他说」叙述框架，观点直接陈述
+- 全部拆短要点：headline/verdict ≤25-30字，points 每条 ≤40字
+- 选手总评要体现【跨局变化】（如：前两局拉胯，决胜局爆发）
+- 整场评分综合各局，不是简单平均——决胜局表现权重更高
+- risk 自评 0-10
+只输出合法 JSON，不要 Markdown。"""
+
+SERIES_USER_TEMPLATE = """【比赛信息】（最终比分为准）
+{match_meta}
+
+【选手名单】
+{roster}
+
+【各局分析】（该解说逐局的结构化观点，按局序排列）
+{games}
+
+输出 JSON：
+{{
+  "overall": {{"sentiment": "好评|差评|中立|复杂", "rating": 1-5,
+              "headline": "整场一句话总结，≤25字",
+              "points": ["整场看点/结论，≤40字", "2-5条"], "risk": 0-10}},
+  "games_brief": [{{"game_no": 1, "one_line": "该局一句话，≤30字，含胜负走向"}}],
+  "teams": [{{"name": "...", "sentiment": "...", "rating": 1-5,
+             "verdict": "整场一句话，≤30字", "points": ["≤40字", "2-3条"], "risk": 0-10}}],
+  "players": [{{"name": "...", "sentiment": "...", "rating": 1-5,
+               "verdict": "整场一句话，≤30字",
+               "points": ["跨局表现变化，≤40字", "2-4条"], "risk": 0-10}}],
+  "blame": {{"headline": "整场的锅在谁，≤25字",
+            "main": [{{"name": "...", "reason": "≤30字"}}], "risk": 0-10}},
+  "risk": 0-10
+}}"""
+
+
 @dataclass
 class InsightResult:
     overall: Optional[dict[str, Any]] = None
@@ -367,3 +402,36 @@ class InsightExtractor:
             section = getattr(result, attr)
             if section and float(section.get("risk") or 0) > RISK_THRESHOLD:
                 setattr(result, attr, None)
+
+    # ---------- 系列赛汇总 ----------
+
+    def aggregate_series(
+        self,
+        *,
+        game_payloads: list[dict[str, Any]],
+        match_meta: dict[str, Any],
+        roster: Optional[list[dict[str, Any]]] = None,
+    ) -> tuple[Optional[dict[str, Any]], dict[str, int]]:
+        """各局分析 → 整场系列赛总评。返回 (series dict 或 None, usage)。"""
+        usage_total = {"prompt_tokens": 0, "completion_tokens": 0}
+        if not game_payloads:
+            return None, usage_total
+        user = SERIES_USER_TEMPLATE.format(
+            match_meta=json.dumps(match_meta, ensure_ascii=False),
+            roster=json.dumps(roster or [], ensure_ascii=False),
+            games=json.dumps(game_payloads, ensure_ascii=False),
+        )
+        text, usage = self.client.chat(system=SERIES_SYSTEM, user=user, temperature=0.5)
+        usage_total["prompt_tokens"] = int(usage.get("prompt_tokens") or 0)
+        usage_total["completion_tokens"] = int(usage.get("completion_tokens") or 0)
+        data = parse_json_lenient(text)
+        if not isinstance(data, dict):
+            return None, usage_total
+        # 系列赛层风控
+        for key in ("overall", "blame"):
+            sec = data.get(key)
+            if isinstance(sec, dict) and float(sec.get("risk") or 0) > RISK_THRESHOLD:
+                data[key] = None
+        data["teams"] = [t for t in (data.get("teams") or []) if isinstance(t, dict) and float(t.get("risk") or 0) <= RISK_THRESHOLD]
+        data["players"] = [p for p in (data.get("players") or []) if isinstance(p, dict) and float(p.get("risk") or 0) <= RISK_THRESHOLD]
+        return data, usage_total
