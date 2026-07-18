@@ -160,9 +160,7 @@ def main() -> None:
     else:
         print(f"[{ts()}]   汇总失败（保留分局结果）", flush=True)
 
-    # ---------- 落盘 ----------
-    out = ROOT / "data" / "insights" / f"{audio_key(args.bvid, pages)}.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
+    # ---------- 终审 ----------
     payload = {
         "bvid": args.bvid,
         "pages": pages,
@@ -172,6 +170,16 @@ def main() -> None:
         "series": series,
         "model": extractor.client.model,
     }
+    print(f"[{ts()}] ══ 终审 ══", flush=True)
+    payload, fixes, usage = extractor.review_payload(payload=payload, match_meta=meta, roster=roster)
+    total_tokens[0] += usage["prompt_tokens"]
+    total_tokens[1] += usage["completion_tokens"]
+    for f in fixes[:10]:
+        print(f"   修订: {f}", flush=True)
+
+    # ---------- 落盘 ----------
+    out = ROOT / "data" / "insights" / f"{audio_key(args.bvid, pages)}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"[{ts()}] 结果已存 {out} | tokens {total_tokens[0]}+{total_tokens[1]}", flush=True)
     print("E2E_DONE", flush=True)

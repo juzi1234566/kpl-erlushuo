@@ -161,6 +161,17 @@ SERIES_USER_TEMPLATE = """【比赛信息】（最终比分为准）
 }}"""
 
 
+REVIEW_SYSTEM = """你是电竞内容的终审编辑。收到一份 AI 生成的整场赛评 JSON（含分局与系列赛汇总），
+在【不改变结构、不增删字段】的前提下做终审修订：
+1. 事实核对：所有比分、胜负、应验/打脸判定必须与【比赛信息】一致，错了就改
+2. 文字质量：修错别字、不通顺的句子、语义不明的表述；人名/队名/英雄名对齐名单
+3. 视角检查：删掉残留的「解说认为/他说」式第三人称框架，改为直接陈述
+4. 长度纪律：headline/verdict ≤30字，points 每条 ≤40字，超长的压缩
+5. 【绝对禁止】修改任何 quotes/predictions/golden_quotes 里的 text 字段（那是解说原话）
+6. 【绝对禁止】编造新内容——只修不添
+输出 JSON：{"payload": <修订后的完整JSON>, "fixes": ["修改说明，每条≤30字", ...]}"""
+
+
 @dataclass
 class InsightResult:
     overall: Optional[dict[str, Any]] = None
@@ -402,6 +413,56 @@ class InsightExtractor:
             section = getattr(result, attr)
             if section and float(section.get("risk") or 0) > RISK_THRESHOLD:
                 setattr(result, attr, None)
+
+    # ---------- 终审 ----------
+
+    def review_payload(
+        self,
+        *,
+        payload: dict[str, Any],
+        match_meta: dict[str, Any],
+        roster: Optional[list[dict[str, Any]]] = None,
+    ) -> tuple[dict[str, Any], list[str], dict[str, int]]:
+        """成品终审：事实核对+文字修订。失败返回原 payload。"""
+        usage_total = {"prompt_tokens": 0, "completion_tokens": 0}
+        user = json.dumps(
+            {
+                "比赛信息": match_meta,
+                "选手名单": roster or [],
+                "待审赛评": payload,
+            },
+            ensure_ascii=False,
+        )
+        try:
+            text, usage = self.client.chat(system=REVIEW_SYSTEM, user=user, temperature=0.2)
+            usage_total["prompt_tokens"] = int(usage.get("prompt_tokens") or 0)
+            usage_total["completion_tokens"] = int(usage.get("completion_tokens") or 0)
+            data = parse_json_lenient(text)
+            reviewed = (data or {}).get("payload") if isinstance(data, dict) else None
+            fixes = (data or {}).get("fixes") if isinstance(data, dict) else None
+            if not isinstance(reviewed, dict):
+                return payload, ["终审输出无效，保留原稿"], usage_total
+            # 结构校验：games 数量一致才接受
+            if len(reviewed.get("games") or []) != len(payload.get("games") or []):
+                return payload, ["终审改动结构，保留原稿"], usage_total
+            # 防御：引用原文强制还原（终审绝不允许动原话）
+            self._restore_quote_texts(payload, reviewed)
+            return reviewed, [str(f) for f in (fixes or [])], usage_total
+        except Exception as exc:  # noqa: BLE001
+            return payload, [f"终审失败：{exc}"], usage_total
+
+    @staticmethod
+    def _restore_quote_texts(original: Any, reviewed: Any) -> None:
+        """并行遍历，把 reviewed 里所有 quote 的 text/raw_text 还原为 original 的值。"""
+        if isinstance(original, dict) and isinstance(reviewed, dict):
+            for key, value in original.items():
+                if key in ("text", "raw_text") and isinstance(value, str) and key in reviewed:
+                    reviewed[key] = value
+                elif key in reviewed:
+                    InsightExtractor._restore_quote_texts(value, reviewed[key])
+        elif isinstance(original, list) and isinstance(reviewed, list):
+            for a, b in zip(original, reviewed):
+                InsightExtractor._restore_quote_texts(a, b)
 
     # ---------- 系列赛汇总 ----------
 
