@@ -263,8 +263,23 @@ def build_insight_rows(
             }
         )
 
+    def summary_of(item: dict[str, Any]) -> str:
+        """headline/verdict + 要点拼接为 summary 落库（展示层优先用 extra 里的结构化字段）。"""
+        head = (item.get("headline") or item.get("verdict") or item.get("summary") or "").strip()
+        points = [str(x).strip() for x in (item.get("points") or []) if str(x).strip()]
+        return "\n".join(x for x in [head, *points] if x)
+
     if result.bp:
-        add("bp", "BP与阵容", result.bp, extra={"predictions": result.bp.get("predictions") or []})
+        add(
+            "bp",
+            "BP与阵容",
+            {**result.bp, "summary": summary_of(result.bp)},
+            extra={
+                "headline": result.bp.get("headline") or "",
+                "points": result.bp.get("points") or [],
+                "predictions": result.bp.get("predictions") or [],
+            },
+        )
     if result.flow:
         flow_summary = "\n".join(
             f"【{label}】{result.flow.get(key)}"
@@ -278,22 +293,46 @@ def build_insight_rows(
             extra={"turning_points": result.flow.get("turning_points") or []},
         )
     if result.overall:
-        add("overall", "整场比赛", result.overall)
+        add(
+            "overall",
+            "整场比赛",
+            {**result.overall, "summary": summary_of(result.overall)},
+            extra={
+                "headline": result.overall.get("headline") or "",
+                "points": result.overall.get("points") or [],
+            },
+        )
     for t in result.teams:
         name = (t.get("name") or "").strip()
         if name:
-            add("team", name, t, subject_id=alias_to_tid.get(name.upper()))
+            add(
+                "team",
+                name,
+                {**t, "summary": summary_of(t)},
+                subject_id=alias_to_tid.get(name.upper()),
+                extra={"verdict": t.get("verdict") or "", "points": t.get("points") or []},
+            )
     for p in result.players:
         name = (p.get("name") or "").strip()
         if name:
             add(
                 "player",
                 name,
-                p,
-                extra={"highlight": p.get("highlight") or "", "lowlight": p.get("lowlight") or ""},
+                {**p, "summary": summary_of(p)},
+                extra={
+                    "verdict": p.get("verdict") or "",
+                    "points": p.get("points") or [],
+                    "highlight": p.get("highlight") or "",
+                    "lowlight": p.get("lowlight") or "",
+                },
             )
     if result.blame:
-        add("blame", "赛后分锅", result.blame, extra={"main": result.blame.get("main") or []})
+        add(
+            "blame",
+            "赛后分锅",
+            {**result.blame, "summary": summary_of(result.blame)},
+            extra={"headline": result.blame.get("headline") or "", "main": result.blame.get("main") or []},
+        )
     if result.golden_quotes:
         add(
             "golden",

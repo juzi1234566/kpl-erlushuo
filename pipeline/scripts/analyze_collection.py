@@ -166,15 +166,15 @@ def main() -> None:
 
     # 预览
     if result.bp:
-        print("\n【BP】", str(result.bp.get("summary"))[:100], flush=True)
+        print("\n【BP】", result.bp.get("headline"), "|", " / ".join(result.bp.get("points") or [])[:120], flush=True)
     if result.flow:
         print("【局势】前期:", str(result.flow.get("early"))[:60], flush=True)
     if result.overall:
-        print("【整体】", result.overall.get("sentiment"), "-", str(result.overall.get("summary"))[:100], flush=True)
-    for p in result.players[:5]:
-        print(f"【{p.get('name')}】{p.get('sentiment')} - {str(p.get('summary'))[:70]}", flush=True)
+        print("【整体】", result.overall.get("sentiment"), "-", result.overall.get("headline"), flush=True)
+    for p in result.players[:6]:
+        print(f"【{p.get('name')}】{p.get('sentiment')} - {p.get('verdict')}", flush=True)
     if result.blame:
-        print("【分锅】", str(result.blame.get("summary"))[:80], flush=True)
+        print("【分锅】", result.blame.get("headline"), flush=True)
     print(f"【金句】x{len(result.golden_quotes)}", flush=True)
     print("E2E_DONE", flush=True)
 

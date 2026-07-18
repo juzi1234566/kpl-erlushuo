@@ -7,15 +7,12 @@ import Ornament from "@/components/Ornament";
 export const dynamic = "force-dynamic";
 
 function fmtTime(iso: string | null): string {
+  // 库里的 start_time 数值本身就是北京时间（官方接口原样入库），
+  // 只是带了 +00:00 后缀——直接按字面量取，不做时区换算
   if (!iso) return "时间待定";
-  const d = new Date(iso);
-  return d.toLocaleString("zh-CN", {
-    timeZone: "Asia/Shanghai",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!m) return iso;
+  return `${Number(m[2])}月${Number(m[3])}日 ${m[4]}:${m[5]}`;
 }
 
 export default async function MatchDetailPage({
