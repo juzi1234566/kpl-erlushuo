@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchMatchInsights } from "@/lib/insights";
+import { buildConsensus } from "@/lib/consensus";
 import UpOpinionCard from "@/components/insights/UpOpinionCard";
+import ConsensusBar from "@/components/insights/ConsensusBar";
 import Ornament from "@/components/Ornament";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +30,7 @@ export default async function MatchDetailPage({
   const t2 = match.team2_id ? teams[match.team2_id] : null;
   const finished = match.status === 2;
   const vodsWithInsights = vods.filter((v) => (insightsByVod[v.id] || []).length > 0);
+  const consensus = buildConsensus(vodsWithInsights, insightsByVod);
 
   return (
     <div className="space-y-14">
@@ -62,6 +65,12 @@ export default async function MatchDetailPage({
             <Ornament className="breathe" />
           </div>
         </div>
+
+        {consensus.length > 0 && (
+          <div className="mb-6">
+            <ConsensusBar items={consensus} />
+          </div>
+        )}
 
         {vodsWithInsights.length === 0 ? (
           <div className="plate p-10 text-center">

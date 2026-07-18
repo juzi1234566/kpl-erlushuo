@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
 import type { DbCommentaryInsight, DbVodSource, InsightQuote } from "@/lib/insights";
 import { biliUrl, fmtTimestamp } from "@/lib/insights";
 
@@ -90,6 +94,7 @@ export default function UpOpinionCard({
   const teams = insights.filter((i) => i.subject_type === "team");
   const players = insights.filter((i) => i.subject_type === "player");
   const page = vod.page_start;
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="plate p-6 md:p-9">
@@ -119,6 +124,23 @@ export default function UpOpinionCard({
         {overall && <div className="mt-2"><Points points={overall.extra?.points} /></div>}
       </div>
 
+      {/* 折叠态：只露分锅钩子，一眼看到最有戏的结论 */}
+      {!expanded && blame?.extra?.headline && (
+        <p className="mb-4 text-[15px]">
+          <span className="seal-ai mr-2">锅</span>
+          <span className="text-muted">{blame.extra.headline}</span>
+        </p>
+      )}
+
+      {!expanded ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="btn-plate w-full text-center"
+        >
+          展开完整赛评（BP · 局势 · {players.length} 位选手 · 分锅 · 金句）
+        </button>
+      ) : (
       <div className="space-y-8">
         {/* BP */}
         {bp && (
@@ -195,7 +217,12 @@ export default function UpOpinionCard({
               {players.map((p) => (
                 <div key={p.id} className="rounded border border-border/40 p-4">
                   <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-                    <span className="text-base font-semibold tracking-wide">{p.subject_name}</span>
+                    <Link
+                      href={`/players/${encodeURIComponent(p.subject_name)}`}
+                      className="text-base font-semibold tracking-wide underline-offset-4 hover:underline"
+                    >
+                      {p.subject_name}
+                    </Link>
                     <SentimentTag sentiment={p.sentiment} />
                     <Rating value={p.rating} />
                   </div>
@@ -279,13 +306,31 @@ export default function UpOpinionCard({
               {(golden.quotes || []).map((q, i) => (
                 <div key={i}>
                   <QuoteLine bvid={vod.bvid} page={page} quote={q} />
-                  {q.context && <p className="ml-4 mt-0.5 text-xs text-faint">{q.context}</p>}
+                  <p className="ml-4 mt-0.5 flex gap-3 text-xs text-faint">
+                    {q.context && <span>{q.context}</span>}
+                    <a
+                      href={`/api/og/quote-card?text=${encodeURIComponent(q.text)}&caster=${encodeURIComponent(vod.caster_name || vod.up_name || "二路解说")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tag--accent underline-offset-4 hover:underline"
+                    >
+                      生成分享卡 →
+                    </a>
+                  </p>
                 </div>
               ))}
             </div>
           </section>
         )}
+        <button
+          type="button"
+          onClick={() => setExpanded(false)}
+          className="btn-plate w-full text-center"
+        >
+          收起
+        </button>
       </div>
+      )}
     </div>
   );
 }

@@ -23,6 +23,21 @@ CHUNK_CHARS = 6000
 CHUNK_OVERLAP = 300
 RISK_THRESHOLD = 6.0
 
+# 电竞常用词（ASR 高频错认对象），校对与热词共用
+ESPORTS_TERMS = [
+    "零封", "被零封", "让一追二", "让二追三", "团灭", "抢龙", "偷家", "大龙", "暴君",
+    "主宰", "先知主宰", "兵线", "高地", "水晶", "闪现", "名刀", "金身", "复活甲",
+    "破军", "逐日", "红buff", "蓝buff", "一血", "五杀", "经济差", "打野", "中路",
+    "对抗路", "发育路", "游走", "开团", "拉扯", "换血", "越塔",
+]
+
+POLISH_SYSTEM = """你是电竞视频转写校对员。给你的引用来自语音识别，含同音/近音错字。
+只做【最小还原修正】：
+- 只修明显的同音错字与识别错误（例：KS级→KSG、被零住→被零封、大师命→大司命）
+- 人名/队名/英雄名对齐给定词表
+- 不改语序、不增删内容、不润色；拿不准的保持原样
+输出 JSON：{"quotes": ["修正后文本", ...]}，数组长度与输入一致、顺序一致。"""
+
 MAP_SYSTEM = """你是电竞解说内容分析师。你收到王者荣耀职业比赛（KPL）二路解说的转写片段。
 提取以下几类内容（宁多勿漏，reduce 阶段会归并）：
 1. bp——BP/选人阶段的点评：ban 了什么放了什么、教练思路好坏、阵容强弱判断
@@ -157,6 +172,7 @@ class InsightExtractor:
                 return result
             self._reduce_phase(candidates, match_meta, roster, result)
             self._verify_quotes(result, up_segments)
+            self._polish_quotes(result, match_meta, roster)
             self._risk_filter(result)
         except Exception as exc:  # noqa: BLE001
             result.error = str(exc)
@@ -287,6 +303,62 @@ class InsightExtractor:
                     ok = verify_list([tp["quote"]])
                     tp["quote"] = ok[0] if ok else None
         result.golden_quotes = verify_list(result.golden_quotes)
+
+    def _collect_quote_refs(self, result: InsightResult) -> list[dict[str, Any]]:
+        refs: list[dict[str, Any]] = []
+        for group in (result.teams, result.players):
+            for item in group:
+                refs.extend(q for q in (item.get("quotes") or []) if isinstance(q, dict))
+        if result.bp:
+            refs.extend(q for q in (result.bp.get("predictions") or []) if isinstance(q, dict))
+        if result.flow:
+            for tp in result.flow.get("turning_points") or []:
+                if isinstance(tp, dict) and isinstance(tp.get("quote"), dict):
+                    refs.append(tp["quote"])
+        refs.extend(q for q in result.golden_quotes if isinstance(q, dict))
+        return [q for q in refs if q.get("text")]
+
+    def _polish_quotes(
+        self,
+        result: InsightResult,
+        match_meta: dict[str, Any],
+        roster: list[dict[str, Any]],
+    ) -> None:
+        """引用最小还原校对：修同音错字，人名/术语对齐词表。失败则静默保留原文。"""
+        refs = self._collect_quote_refs(result)
+        if not refs:
+            return
+        glossary = sorted(
+            {
+                *(p.get("player") or "" for p in roster),
+                *(p.get("team") or "" for p in roster),
+                *(h for p in roster for h in (p.get("heroes") or [])),
+                *ESPORTS_TERMS,
+                str(match_meta.get("team_a") or ""),
+                str(match_meta.get("team_b") or ""),
+            }
+            - {""}
+        )
+        payload = {"词表": glossary, "quotes": [q["text"] for q in refs]}
+        try:
+            text, usage = self.client.chat(
+                system=POLISH_SYSTEM,
+                user=json.dumps(payload, ensure_ascii=False),
+                temperature=0.1,
+            )
+            result.prompt_tokens += int(usage.get("prompt_tokens") or 0)
+            result.completion_tokens += int(usage.get("completion_tokens") or 0)
+            data = parse_json_lenient(text)
+            fixed = (data or {}).get("quotes") if isinstance(data, dict) else None
+            if isinstance(fixed, list) and len(fixed) == len(refs):
+                for q, new_text in zip(refs, fixed):
+                    if isinstance(new_text, str) and new_text.strip():
+                        # 长度暴涨说明被改写而非校对，弃用
+                        if len(new_text) <= len(q["text"]) * 1.5:
+                            q["raw_text"] = q["text"]
+                            q["text"] = new_text.strip()
+        except Exception:  # noqa: BLE001
+            pass
 
     def _risk_filter(self, result: InsightResult) -> None:
         result.teams = [t for t in result.teams if float(t.get("risk") or 0) <= RISK_THRESHOLD]

@@ -249,3 +249,88 @@ export function fmtTimestamp(ms: number): string {
   const sec = s % 60;
   return `${m}:${String(sec).padStart(2, "0")}`;
 }
+
+// ---------- 选手聚合 ----------
+
+export type PlayerReview = {
+  match_id: string;
+  caster: string;
+  bvid: string;
+  page_start: number | null;
+  sentiment: DbCommentaryInsight["sentiment"];
+  rating: number | null;
+  verdict: string;
+  points: string[];
+  quotes: InsightQuote[];
+};
+
+/** 某选手的跨场次跨主播历史评价（云端优先，本地 JSON 回退） */
+export async function fetchPlayerReviews(name: string): Promise<PlayerReview[]> {
+  const sb = getSupabase();
+  // 云端
+  if (sb) {
+    try {
+      const { data, error } = await sb
+        .from("commentary_insights")
+        .select("match_id,subject_name,sentiment,rating,summary,quotes,extra,vod_id,status")
+        .eq("subject_type", "player")
+        .eq("subject_name", name)
+        .eq("status", "approved");
+      if (!error && data?.length) {
+        const vodIds = [...new Set(data.map((i) => i.vod_id))];
+        const { data: vodRows } = await sb
+          .from("vod_sources")
+          .select("id,bvid,caster_name,up_name,page_start")
+          .in("id", vodIds);
+        const vodMap: Record<string, { bvid: string; caster: string; page_start: number | null }> = {};
+        for (const v of vodRows || [])
+          vodMap[v.id] = {
+            bvid: v.bvid,
+            caster: v.caster_name || v.up_name || "解说",
+            page_start: v.page_start,
+          };
+        return data.map((i) => ({
+          match_id: i.match_id,
+          caster: vodMap[i.vod_id]?.caster || "解说",
+          bvid: vodMap[i.vod_id]?.bvid || "",
+          page_start: vodMap[i.vod_id]?.page_start ?? null,
+          sentiment: i.sentiment,
+          rating: i.rating,
+          verdict: i.extra?.verdict || i.summary || "",
+          points: i.extra?.points || [],
+          quotes: i.quotes || [],
+        }));
+      }
+    } catch {
+      /* fall through to local */
+    }
+  }
+  // 本地回退
+  try {
+    const { readdir, readFile } = await import("fs/promises");
+    const path = await import("path");
+    const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    const out: PlayerReview[] = [];
+    for (const f of files) {
+      const d = JSON.parse(await readFile(path.join(dir, f), "utf-8"));
+      for (const pl of d.players || []) {
+        if (pl.name !== name) continue;
+        out.push({
+          match_id: String(d.match_id),
+          caster: d.caster,
+          bvid: d.bvid,
+          page_start: Array.isArray(d.pages) ? d.pages[0] : 1,
+          sentiment: pl.sentiment || "中立",
+          rating: pl.rating ?? null,
+          verdict: pl.verdict || "",
+          points: pl.points || [],
+          quotes: pl.quotes || [],
+        });
+      }
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}

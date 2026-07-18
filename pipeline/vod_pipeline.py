@@ -95,11 +95,13 @@ def match_roster_and_hotwords(match_id: str) -> tuple[list[dict[str, Any]], str]
                     entry["heroes"].add(hero)
             api.sleep_politely()
 
+    from ai.insight_extractor import ESPORTS_TERMS
+
     roster = [
         {"team": v["team"], "player": v["player"], "heroes": sorted(v["heroes"])}
         for v in players.values()
     ]
-    hot_terms = sorted({*players.keys(), *teams, *heroes})
+    hot_terms = sorted({*players.keys(), *teams, *heroes, *ESPORTS_TERMS})
     return roster, " ".join(t for t in hot_terms if t)
 
 
