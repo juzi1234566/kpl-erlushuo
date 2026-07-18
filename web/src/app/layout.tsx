@@ -54,7 +54,7 @@ export default function RootLayout({
             <p className="max-w-xl text-center text-xs leading-loose text-muted">
               本站为粉丝自发项目，与腾讯、王者荣耀职业赛事、各俱乐部及各解说均无隶属关系。
               观点由 AI 自动提取自各解说公开视频，引用归属原作者，点击时间戳可跳转原视频；AI
-              内容一律带标识。侵权或不适内容请发邮件至 report@example.com（上线前替换），目标 24
+              内容一律带标识。侵权或不适内容请发邮件至 3365132306@qq.com，目标 24
               小时内处理。
             </p>
           </div>

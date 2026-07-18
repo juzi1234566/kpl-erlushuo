@@ -80,7 +80,7 @@ export default function FeedbackWidget() {
               />
               {state === "error" && (
                 <p className="mb-2 text-xs text-seal">
-                  提交失败了，可以直接发邮件到 report@example.com
+                  提交失败了，可以直接发邮件到 3365132306@qq.com
                 </p>
               )}
               <div className="flex justify-end gap-3">
