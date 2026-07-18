@@ -191,11 +191,13 @@ def main() -> None:
                 )
                 print(f"[{ts()}]     {'✅' if ok else '❌ 失败，详见日志'}", flush=True)
 
-            # 终审 + 综合评
+            # 终审 + 综合评 + 上云
             print(f"[{ts()}]   终审…", flush=True)
             run_step(["scripts.review_insights", "--all"], log)
             print(f"[{ts()}]   综合评…", flush=True)
             run_step(["scripts.aggregate_match", "--match-id", match_id], log)
+            print(f"[{ts()}]   上云…", flush=True)
+            run_step(["scripts.ingest_insights", "--match-id", match_id], log)
             print(f"[{ts()}]   比赛 {match_id} 完成", flush=True)
 
     print(f"[{ts()}] NIGHT_BATCH_DONE", flush=True)

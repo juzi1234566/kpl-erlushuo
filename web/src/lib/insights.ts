@@ -48,6 +48,7 @@ export type InsightExtra = {
   lowlight?: string;
   main?: { name: string; reason: string }[];
   games_brief?: { game_no: number; one_line: string }[];
+  page?: number;
 };
 
 export type DbCommentaryInsight = {
@@ -61,6 +62,7 @@ export type DbCommentaryInsight = {
   summary: string;
   quotes: InsightQuote[] | null;
   extra: InsightExtra | null;
+  game_no?: number;
 };
 
 /** 一位解说对一场比赛的完整观点：系列赛总评 + 分局详情 */
@@ -291,7 +293,75 @@ async function fetchLocalAggregate(matchId: string): Promise<MatchAggregate | nu
   }
 }
 
-/** 比赛详情 + 各解说观点（比赛信息走云端，观点当前本地模式） */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function fetchCloudOpinions(sb: any, matchId: string): Promise<CasterOpinion[]> {
+  try {
+    const { data: rows, error } = await sb
+      .from("commentary_insights")
+      .select("id,vod_id,match_id,subject_type,subject_name,sentiment,rating,summary,quotes,extra,game_no")
+      .eq("match_id", matchId)
+      .eq("status", "approved");
+    if (error || !rows?.length) return [];
+    const vodIds = [...new Set(rows.map((r: any) => r.vod_id))];
+    const { data: vodRows } = await sb
+      .from("vod_sources")
+      .select("id,bvid,title,up_name,caster_name,page_start,pubdate,duration_s")
+      .in("id", vodIds);
+    const vodMap: Record<string, DbVodSource> = {};
+    for (const v of vodRows || []) vodMap[v.id] = v;
+
+    const opinions: CasterOpinion[] = [];
+    for (const vodId of vodIds) {
+      const vod = vodMap[vodId as string];
+      if (!vod) continue;
+      const mine = rows.filter((r: any) => r.vod_id === vodId);
+      const series = mine.filter((r: any) => !r.game_no);
+      const byGame: Record<number, DbCommentaryInsight[]> = {};
+      for (const r of mine) {
+        if (r.game_no) (byGame[r.game_no] ||= []).push(r);
+      }
+      const games = Object.keys(byGame)
+        .map(Number)
+        .sort((a, b) => a - b)
+        .map((no) => ({
+          game_no: no,
+          page: byGame[no][0]?.extra?.page || (vod.page_start || 1) + no - 1,
+          rows: byGame[no],
+        }));
+      opinions.push({ vod, series, games });
+    }
+    return opinions;
+  } catch {
+    return [];
+  }
+}
+
+async function fetchCloudAggregate(sb: any, matchId: string): Promise<MatchAggregate | null> {
+  try {
+    const { data } = await sb
+      .from("match_aggregates")
+      .select("payload,caster_count")
+      .eq("match_id", matchId)
+      .maybeSingle();
+    if (!data?.payload) return null;
+    const d = data.payload;
+    return {
+      headline: d.headline || "",
+      bp_read: d.bp_read || "",
+      pace: d.pace || "",
+      overall: d.overall || "",
+      teams: d.teams || [],
+      players: d.players || [],
+      controversy: d.controversy || "",
+      caster_count: data.caster_count || 0,
+    };
+  } catch {
+    return null;
+  }
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+/** 比赛详情 + 各解说观点（云端优先，本地 JSON 回退） */
 export async function fetchMatchInsights(matchId: string): Promise<MatchInsights> {
   const empty: MatchInsights = { match: null, teams: {}, opinions: [], aggregate: null };
   const sb = getSupabase();
@@ -312,8 +382,10 @@ export async function fetchMatchInsights(matchId: string): Promise<MatchInsights
     const teams: Record<string, DbTeam> = {};
     for (const t of teamRows || []) teams[t.id] = t;
 
-    const opinions = await fetchLocalOpinions(matchId);
-    const aggregate = await fetchLocalAggregate(matchId);
+    let opinions = await fetchCloudOpinions(sb, matchId);
+    if (!opinions.length) opinions = await fetchLocalOpinions(matchId);
+    const aggregate =
+      (await fetchCloudAggregate(sb, matchId)) || (await fetchLocalAggregate(matchId));
     return { match: match as DbMatch, teams, opinions, aggregate };
   } catch {
     return empty;
@@ -349,8 +421,47 @@ export type PlayerReview = {
   quotes: InsightQuote[];
 };
 
-/** 某选手的跨场次跨主播评价（整场层优先；本地模式） */
+/** 某选手的跨场次跨主播评价（云端优先，本地回退） */
 export async function fetchPlayerReviews(name: string): Promise<PlayerReview[]> {
+  const sb = getSupabase();
+  if (sb) {
+    try {
+      const { data } = await sb
+        .from("commentary_insights")
+        .select("match_id,sentiment,rating,summary,quotes,extra,vod_id")
+        .eq("subject_type", "player")
+        .eq("subject_name", name)
+        .eq("game_no", 0)
+        .eq("status", "approved");
+      if (data?.length) {
+        const vodIds = [...new Set(data.map((i) => i.vod_id))];
+        const { data: vodRows } = await sb
+          .from("vod_sources")
+          .select("id,bvid,caster_name,up_name,page_start")
+          .in("id", vodIds);
+        const vodMap: Record<string, { bvid: string; caster: string; page_start: number | null }> = {};
+        for (const v of vodRows || [])
+          vodMap[v.id] = {
+            bvid: v.bvid,
+            caster: v.caster_name || v.up_name || "解说",
+            page_start: v.page_start,
+          };
+        return data.map((i) => ({
+          match_id: i.match_id,
+          caster: vodMap[i.vod_id]?.caster || "解说",
+          bvid: vodMap[i.vod_id]?.bvid || "",
+          page_start: vodMap[i.vod_id]?.page_start ?? null,
+          sentiment: i.sentiment,
+          rating: i.rating,
+          verdict: i.extra?.verdict || i.summary || "",
+          points: i.extra?.points || [],
+          quotes: i.quotes || [],
+        }));
+      }
+    } catch {
+      /* fall through */
+    }
+  }
   try {
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");
@@ -396,6 +507,29 @@ export type AnalyzedMatch = {
 
 export async function listAnalyzedMatches(): Promise<AnalyzedMatch[]> {
   const byMatch: Record<string, Set<string>> = {};
+  const sbPre = getSupabase();
+  if (sbPre) {
+    try {
+      const { data } = await sbPre
+        .from("commentary_insights")
+        .select("match_id,vod_id")
+        .eq("status", "approved")
+        .eq("game_no", 0);
+      if (data?.length) {
+        const vodIds = [...new Set(data.map((i) => i.vod_id))];
+        const { data: vodRows } = await sbPre
+          .from("vod_sources")
+          .select("id,caster_name,up_name")
+          .in("id", vodIds);
+        const casterMap: Record<string, string> = {};
+        for (const v of vodRows || []) casterMap[v.id] = v.caster_name || v.up_name || "解说";
+        for (const i of data)
+          (byMatch[String(i.match_id)] ||= new Set()).add(casterMap[i.vod_id] || "解说");
+      }
+    } catch {
+      /* ignore */
+    }
+  }
   try {
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");

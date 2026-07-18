@@ -67,8 +67,9 @@ create table if not exists commentary_insights (
   is_ai_generated boolean not null default true,
   model text,
   status moderation_status not null default 'pending',
+  game_no int not null default 0,          -- 0=整场系列层，1-7=分局
   created_at timestamptz not null default now(),
-  unique (vod_id, subject_type, subject_name)   -- 分析重跑幂等
+  unique (vod_id, game_no, subject_type, subject_name)   -- 分析重跑幂等
 );
 create index if not exists idx_ci_match on commentary_insights(match_id, status);
 
