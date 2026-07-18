@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchMatchInsights } from "@/lib/insights";
-import { buildRatingTable } from "@/lib/consensus";
 import UpOpinionCard from "@/components/insights/UpOpinionCard";
-import ConsensusBar from "@/components/insights/ConsensusBar";
+import AiVerdict from "@/components/insights/AiVerdict";
 import Ornament from "@/components/Ornament";
 
 export const dynamic = "force-dynamic";
@@ -23,13 +22,12 @@ export default async function MatchDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { match, teams, opinions } = await fetchMatchInsights(id);
+  const { match, teams, opinions, aggregate } = await fetchMatchInsights(id);
   if (!match) notFound();
 
   const t1 = match.team1_id ? teams[match.team1_id] : null;
   const t2 = match.team2_id ? teams[match.team2_id] : null;
   const finished = match.status === 2;
-  const ratingTable = buildRatingTable(opinions);
 
   return (
     <div className="space-y-14">
@@ -65,9 +63,9 @@ export default async function MatchDetailPage({
           </div>
         </div>
 
-        {ratingTable.rows.length > 0 && (
+        {aggregate && (
           <div className="mb-6">
-            <ConsensusBar table={ratingTable} />
+            <AiVerdict aggregate={aggregate} />
           </div>
         )}
 

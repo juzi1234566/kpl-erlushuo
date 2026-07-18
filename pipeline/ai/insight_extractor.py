@@ -119,8 +119,8 @@ REDUCE_USER_TEMPLATE = """【比赛信息】（含最终比分，预测应验/�
                "points": ["前期/后期/关键时刻各自表现，≤40字", "2-4条"],
                "highlight": "高光，≤25字，没有留空", "lowlight": "低谷，≤25字，没有留空",
                "quotes": [最多2条], "risk": 0-10}}],
-  "blame": {{"headline": "锅在谁，一句话，≤25字",
-            "main": [{{"name": "背锅对象", "reason": "锅因，≤30字"}}], "risk": 0-10}},
+  "blame": {{"headline": "败因一句话（客观委婉，点到为止），≤25字",
+            "main": [{{"name": "责任较大的选手/位置", "reason": "客观描述失误，≤30字，不用嘲讽词"}}], "risk": 0-10}},
   "golden_quotes": [{{"text": "金句原话", "start_ms": 0, "context": "场景，≤15字"}}],
   "risk": 整体0-10
 }}"""
@@ -155,11 +155,18 @@ SERIES_USER_TEMPLATE = """【比赛信息】（最终比分为准）
   "players": [{{"name": "...", "sentiment": "...", "rating": 1-5,
                "verdict": "整场一句话，≤30字",
                "points": ["跨局表现变化，≤40字", "2-4条"], "risk": 0-10}}],
-  "blame": {{"headline": "整场的锅在谁，≤25字",
-            "main": [{{"name": "...", "reason": "≤30字"}}], "risk": 0-10}},
+  "blame": {{"headline": "整场主要败因（客观委婉），≤25字",
+            "main": [{{"name": "...", "reason": "客观描述，≤30字，不嘲讽"}}], "risk": 0-10}},
   "risk": 0-10
 }}"""
 
+
+GOLDEN_QC_SYSTEM = """你是内容质检员。给你的「金句」来自语音转写，用于网页展示，标准很高：
+必须【通顺、完整、单独读也有意思】。逐条判定：
+- fix：有同音错字但句子本身完整有梗 → 修正错字后保留（不改语序不加词）
+- delete：句子不完整、读不通、缺上下文看不懂、平淡无梗 → 删除
+宁缺毋滥：拿不准就 delete。
+输出 JSON：{"results": [{"index": 0, "action": "fix"|"keep"|"delete", "text": "fix 时给修正后文本"}]}"""
 
 REVIEW_SYSTEM = """你是电竞内容的终审编辑。收到一份 AI 生成的整场赛评 JSON（含分局与系列赛汇总），
 在【不改变结构、不增删字段】的前提下做终审修订：
@@ -413,6 +420,48 @@ class InsightExtractor:
             section = getattr(result, attr)
             if section and float(section.get("risk") or 0) > RISK_THRESHOLD:
                 setattr(result, attr, None)
+
+    # ---------- 金句质检 ----------
+
+    def qc_golden_quotes(
+        self,
+        quotes: list[dict[str, Any]],
+        glossary: Optional[list[str]] = None,
+    ) -> tuple[list[dict[str, Any]], dict[str, int]]:
+        """金句展示前质检：错字修正、不完整/无梗的删除。宁缺毋滥。"""
+        usage_total = {"prompt_tokens": 0, "completion_tokens": 0}
+        items = [q for q in quotes if isinstance(q, dict) and q.get("text")]
+        if not items:
+            return [], usage_total
+        payload = {
+            "词表": glossary or [],
+            "金句": [{"index": i, "text": q["text"]} for i, q in enumerate(items)],
+        }
+        try:
+            text, usage = self.client.chat(
+                system=GOLDEN_QC_SYSTEM,
+                user=json.dumps(payload, ensure_ascii=False),
+                temperature=0.1,
+            )
+            usage_total["prompt_tokens"] = int(usage.get("prompt_tokens") or 0)
+            usage_total["completion_tokens"] = int(usage.get("completion_tokens") or 0)
+            data = parse_json_lenient(text)
+            results = (data or {}).get("results") if isinstance(data, dict) else None
+            if not isinstance(results, list):
+                return items, usage_total
+            kept: list[dict[str, Any]] = []
+            decisions = {int(r.get("index", -1)): r for r in results if isinstance(r, dict)}
+            for i, q in enumerate(items):
+                r = decisions.get(i)
+                action = (r or {}).get("action") or "keep"
+                if action == "delete":
+                    continue
+                if action == "fix" and (r or {}).get("text"):
+                    q = {**q, "raw_text": q.get("raw_text") or q["text"], "text": str(r["text"]).strip()}
+                kept.append(q)
+            return kept, usage_total
+        except Exception:  # noqa: BLE001
+            return items, usage_total
 
     # ---------- 终审 ----------
 

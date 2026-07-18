@@ -42,15 +42,16 @@ class DeepSeekClient:
         system: str,
         user: str,
         temperature: float = 0.7,
+        model: Optional[str] = None,
     ) -> tuple[str, dict[str, Any]]:
-        """返回 (文本, usage)。失败抛异常，由调用方决定重试。"""
+        """返回 (文本, usage)。model 可临时覆盖（如重要环节用 deepseek-reasoner）。"""
         url = f"{self.base_url}/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
         body = {
-            "model": self.model,
+            "model": model or self.model,
             "temperature": temperature,
             "messages": [
                 {"role": "system", "content": system},

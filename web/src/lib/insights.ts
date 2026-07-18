@@ -70,10 +70,29 @@ export type CasterOpinion = {
   games: { game_no: number; page: number; rows: DbCommentaryInsight[] }[];
 };
 
+export type AggregateEntry = {
+  name: string;
+  text: string;
+  consensus: string;
+};
+
+/** 跨解说 AI 综合评（deepseek-reasoner 生成） */
+export type MatchAggregate = {
+  headline: string;
+  bp_read?: string;
+  pace?: string;
+  overall: string;
+  teams: AggregateEntry[];
+  players: AggregateEntry[];
+  controversy?: string;
+  caster_count: number;
+};
+
 export type MatchInsights = {
   match: DbMatch | null;
   teams: Record<string, DbTeam>;
   opinions: CasterOpinion[];
+  aggregate: MatchAggregate | null;
 };
 
 // ---------- JSON → 行 的映射 ----------
@@ -189,7 +208,7 @@ async function fetchLocalOpinions(matchId: string): Promise<CasterOpinion[]> {
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");
     const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
-    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json") && !f.startsWith("_") && !f.endsWith(".orig.json"));
     const byCaster: Record<string, { opinion: CasterOpinion; gameCount: number }> = {};
 
     for (const f of files) {
@@ -249,9 +268,32 @@ async function fetchLocalOpinions(matchId: string): Promise<CasterOpinion[]> {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+async function fetchLocalAggregate(matchId: string): Promise<MatchAggregate | null> {
+  try {
+    const { readFile } = await import("fs/promises");
+    const path = await import("path");
+    const p = path.join(
+      process.cwd(), "..", "pipeline", "data", "insights", `_match_${matchId}.json`,
+    );
+    const d = JSON.parse(await readFile(p, "utf-8"));
+    return {
+      headline: d.headline || "",
+      bp_read: d.bp_read || "",
+      pace: d.pace || "",
+      overall: d.overall || "",
+      teams: d.teams || [],
+      players: d.players || [],
+      controversy: d.controversy || "",
+      caster_count: d.caster_count || 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** 比赛详情 + 各解说观点（比赛信息走云端，观点当前本地模式） */
 export async function fetchMatchInsights(matchId: string): Promise<MatchInsights> {
-  const empty: MatchInsights = { match: null, teams: {}, opinions: [] };
+  const empty: MatchInsights = { match: null, teams: {}, opinions: [], aggregate: null };
   const sb = getSupabase();
   if (!sb) return empty;
   try {
@@ -271,7 +313,8 @@ export async function fetchMatchInsights(matchId: string): Promise<MatchInsights
     for (const t of teamRows || []) teams[t.id] = t;
 
     const opinions = await fetchLocalOpinions(matchId);
-    return { match: match as DbMatch, teams, opinions };
+    const aggregate = await fetchLocalAggregate(matchId);
+    return { match: match as DbMatch, teams, opinions, aggregate };
   } catch {
     return empty;
   }
@@ -312,7 +355,7 @@ export async function fetchPlayerReviews(name: string): Promise<PlayerReview[]> 
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");
     const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
-    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json") && !f.startsWith("_") && !f.endsWith(".orig.json"));
     const best: Record<string, { review: PlayerReview; games: number }> = {};
     for (const f of files) {
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -357,7 +400,7 @@ export async function listAnalyzedMatches(): Promise<AnalyzedMatch[]> {
     const { readdir, readFile } = await import("fs/promises");
     const path = await import("path");
     const dir = path.join(process.cwd(), "..", "pipeline", "data", "insights");
-    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json") && !f.startsWith("_") && !f.endsWith(".orig.json"));
     for (const f of files) {
       const d = JSON.parse(await readFile(path.join(dir, f), "utf-8"));
       if (d.match_id) (byMatch[String(d.match_id)] ||= new Set()).add(d.caster);

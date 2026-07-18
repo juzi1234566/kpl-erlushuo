@@ -163,13 +163,13 @@ function GameSections({
 
       {blame && (
         <section>
-          <p className="tag tag--accent mb-2">本局分锅</p>
+          <p className="tag tag--accent mb-2">本局复盘</p>
           {blame.extra?.headline && (
             <p className="mb-1.5 text-[15px] font-medium">{blame.extra.headline}</p>
           )}
           {(blame.extra?.main || []).map((m, i) => (
             <p key={i} className="text-sm text-muted">
-              <span className="seal-ai mr-2">锅</span>
+              <span className="seal-ai mr-2">主责</span>
               <span className="font-semibold text-foreground">{m.name}</span> — {m.reason}
             </p>
           ))}
@@ -243,7 +243,7 @@ export default function UpOpinionCard({ opinion }: { opinion: CasterOpinion }) {
         )}
         {blame?.extra?.headline && (
           <p className="mt-3 text-[15px]">
-            <span className="seal-ai mr-2">整场的锅</span>
+            <span className="seal-ai mr-2">整场败因</span>
             <span className="text-muted">{blame.extra.headline}</span>
           </p>
         )}
