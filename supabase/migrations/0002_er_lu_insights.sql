@@ -112,6 +112,18 @@ alter table match_aggregates enable row level security;
 drop policy if exists match_aggregates_public_read on match_aggregates;
 create policy match_aggregates_public_read on match_aggregates for select using (true);
 
+-- ============ 每局官方战绩 ============
+create table if not exists match_game_stats (
+  match_id text not null references matches(id),
+  game_no int not null,
+  payload jsonb not null,      -- {teams, bans, picks, players[{hero,k,d,a,gold,...}], win_camp, duration_s}
+  updated_at timestamptz not null default now(),
+  primary key (match_id, game_no)
+);
+alter table match_game_stats enable row level security;
+drop policy if exists match_game_stats_public_read on match_game_stats;
+create policy match_game_stats_public_read on match_game_stats for select using (true);
+
 -- ============ job_kind 枚举扩展 ============
 -- ！！以下四条需在 SQL Editor 中逐条单独执行（不能与上面同事务）！！
 -- alter type job_kind add value if not exists 'vod_scan';

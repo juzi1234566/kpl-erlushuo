@@ -22,7 +22,7 @@ export default async function MatchDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { match, teams, opinions, aggregate } = await fetchMatchInsights(id);
+  const { match, teams, opinions, aggregate, gameStats } = await fetchMatchInsights(id);
   if (!match) notFound();
 
   const t1 = match.team1_id ? teams[match.team1_id] : null;
@@ -80,7 +80,7 @@ export default async function MatchDetailPage({
         ) : (
           <div className="space-y-6">
             {opinions.map((o) => (
-              <UpOpinionCard key={o.vod.id} opinion={o} />
+              <UpOpinionCard key={o.vod.id} opinion={o} gameStats={gameStats} />
             ))}
           </div>
         )}

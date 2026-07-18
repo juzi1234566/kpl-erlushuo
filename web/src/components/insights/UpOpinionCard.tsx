@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { CasterOpinion, DbCommentaryInsight, InsightQuote } from "@/lib/insights";
+import type { CasterOpinion, DbCommentaryInsight, GameStats, InsightQuote } from "@/lib/insights";
 import { biliUrl, fmtTimestamp } from "@/lib/insights";
+import GameStatsBoard from "./GameStatsBoard";
 
 function SentimentTag({ sentiment }: { sentiment: string }) {
   const cls =
@@ -203,7 +204,13 @@ function GameSections({
   );
 }
 
-export default function UpOpinionCard({ opinion }: { opinion: CasterOpinion }) {
+export default function UpOpinionCard({
+  opinion,
+  gameStats = {},
+}: {
+  opinion: CasterOpinion;
+  gameStats?: Record<number, GameStats>;
+}) {
   const { vod, series, games } = opinion;
   const [openGame, setOpenGame] = useState<number | null>(null);
 
@@ -294,6 +301,7 @@ export default function UpOpinionCard({ opinion }: { opinion: CasterOpinion }) {
                 </button>
                 {open && (
                   <div className="border-t border-border/30 px-4 py-5">
+                    {gameStats[g.game_no] && <GameStatsBoard stats={gameStats[g.game_no]} />}
                     <GameSections rows={g.rows} bvid={vod.bvid} page={g.page} />
                   </div>
                 )}

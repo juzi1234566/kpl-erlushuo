@@ -1,0 +1,1495 @@
+{
+ "match_id": "2026071703",
+ "games": [
+  {
+   "game_no": 1,
+   "battle_id": "501236240_3_1784289772",
+   "duration_s": 1339,
+   "win_camp": 2,
+   "teams": {
+    "1": {
+     "team_id": "10005",
+     "name": "KSG",
+     "icon": "https://smobatv-pic.tga.qq.com/e7f3ca48aa29a89c5cf7e04d7f83534f.png",
+     "kills": 6,
+     "win": false
+    },
+    "2": {
+     "team_id": "10027",
+     "name": "成都AG超玩会",
+     "icon": "https://smhtv-pic.tga.qq.com/02e0582db3b0766ad6fab97e95743e6c.png",
+     "kills": 13,
+     "win": true
+    }
+   },
+   "bans": [
+    {
+     "camp": 1,
+     "hero": "元流之子(辅助)",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/585.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "鲁班大师",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/525.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "关羽",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/140.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "钟馗",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/175.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "海月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/521.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "镜",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/531.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "哪吒",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/180.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "赵云",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/107.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "不知火舞",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/157.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "裴擒虎",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/502.jpg"
+    }
+   ],
+   "picks": [
+    {
+     "camp": 1,
+     "hero": "盾山",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/509.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "戈娅",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/548.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "苏烈",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/194.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "艾琳",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/155.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "狂铁",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/503.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "夏洛特",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/536.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "沈梦溪",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/312.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "猪八戒",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/511.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "嫦娥",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/515.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "大司命",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/517.jpg"
+    }
+   ],
+   "players": [
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "流浪",
+     "hero": "嫦娥",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/515.jpg",
+     "position": 2,
+     "k": 0,
+     "d": 3,
+     "a": 5,
+     "gold": 12868,
+     "hurt_rate": 0.2224,
+     "be_hurt_rate": 0.1365,
+     "participation": 83.3333,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "烈峰峰",
+     "hero": "盾山",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/509.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 2,
+     "a": 6,
+     "gold": 9557,
+     "hurt_rate": 0.0274,
+     "be_hurt_rate": 0.1491,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "句号",
+     "hero": "猪八戒",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/511.jpg",
+     "position": 5,
+     "k": 0,
+     "d": 3,
+     "a": 3,
+     "gold": 11200,
+     "hurt_rate": 0.1943,
+     "be_hurt_rate": 0.2739,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "无言",
+     "hero": "狂铁",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/503.jpg",
+     "position": 6,
+     "k": 1,
+     "d": 3,
+     "a": 5,
+     "gold": 13387,
+     "hurt_rate": 0.1978,
+     "be_hurt_rate": 0.2767,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "小屿",
+     "hero": "艾琳",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/155.jpg",
+     "position": 7,
+     "k": 5,
+     "d": 2,
+     "a": 1,
+     "gold": 16211,
+     "hurt_rate": 0.358,
+     "be_hurt_rate": 0.1638,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": true
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "长生",
+     "hero": "沈梦溪",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/312.jpg",
+     "position": 2,
+     "k": 2,
+     "d": 0,
+     "a": 9,
+     "gold": 14253,
+     "hurt_rate": 0.1771,
+     "be_hurt_rate": 0.0991,
+     "participation": 84.6154,
+     "mvp": true,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "大帅",
+     "hero": "苏烈",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/194.jpg",
+     "position": 4,
+     "k": 1,
+     "d": 2,
+     "a": 6,
+     "gold": 11526,
+     "hurt_rate": 0.0339,
+     "be_hurt_rate": 0.2464,
+     "participation": 53.8462,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "钟意",
+     "hero": "大司命",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/517.jpg",
+     "position": 5,
+     "k": 4,
+     "d": 2,
+     "a": 4,
+     "gold": 14151,
+     "hurt_rate": 0.2249,
+     "be_hurt_rate": 0.3103,
+     "participation": 61.5385,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "轩染",
+     "hero": "夏洛特",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/536.jpg",
+     "position": 6,
+     "k": 2,
+     "d": 2,
+     "a": 5,
+     "gold": 14609,
+     "hurt_rate": 0.2191,
+     "be_hurt_rate": 0.2101,
+     "participation": 53.8462,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "一诺",
+     "hero": "戈娅",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/548.jpg",
+     "position": 7,
+     "k": 4,
+     "d": 0,
+     "a": 6,
+     "gold": 18457,
+     "hurt_rate": 0.3449,
+     "be_hurt_rate": 0.1341,
+     "participation": 76.9231,
+     "mvp": false,
+     "lose_mvp": false
+    }
+   ]
+  },
+  {
+   "game_no": 2,
+   "battle_id": "501236240_4_1784292087",
+   "duration_s": 827,
+   "win_camp": 2,
+   "teams": {
+    "1": {
+     "team_id": "10027",
+     "name": "成都AG超玩会",
+     "icon": "https://smhtv-pic.tga.qq.com/02e0582db3b0766ad6fab97e95743e6c.png",
+     "kills": 1,
+     "win": false
+    },
+    "2": {
+     "team_id": "10005",
+     "name": "KSG",
+     "icon": "https://smobatv-pic.tga.qq.com/e7f3ca48aa29a89c5cf7e04d7f83534f.png",
+     "kills": 13,
+     "win": true
+    }
+   },
+   "bans": [
+    {
+     "camp": 1,
+     "hero": "元流之子(辅助)",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/585.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "鲁班大师",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/525.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "苏烈",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/194.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "盾山",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/509.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "芈月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/121.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "阿古朵",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/533.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "司空震",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/537.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "虞姬",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/174.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "狂铁",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/503.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "百里守约",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/196.jpg"
+    }
+   ],
+   "picks": [
+    {
+     "camp": 1,
+     "hero": "海月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/521.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "武则天",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/136.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "张飞",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/171.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "敖隐",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/519.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "少司缘",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/577.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "夏洛特",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/536.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "苍",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/177.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "夏侯惇",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/126.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "李信",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/507.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "赵云",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/107.jpg"
+    }
+   ],
+   "players": [
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "长生",
+     "hero": "海月",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/521.jpg",
+     "position": 2,
+     "k": 0,
+     "d": 4,
+     "a": 1,
+     "gold": 8211,
+     "hurt_rate": 0.2,
+     "be_hurt_rate": 0.1596,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "大帅",
+     "hero": "少司缘",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/577.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 3,
+     "a": 1,
+     "gold": 6923,
+     "hurt_rate": 0.0575,
+     "be_hurt_rate": 0.1733,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "钟意",
+     "hero": "夏侯惇",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/126.jpg",
+     "position": 5,
+     "k": 0,
+     "d": 2,
+     "a": 0,
+     "gold": 7841,
+     "hurt_rate": 0.2159,
+     "be_hurt_rate": 0.3291,
+     "participation": 0,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "轩染",
+     "hero": "李信",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/507.jpg",
+     "position": 6,
+     "k": 0,
+     "d": 4,
+     "a": 0,
+     "gold": 8570,
+     "hurt_rate": 0.2432,
+     "be_hurt_rate": 0.1896,
+     "participation": 0,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "一诺",
+     "hero": "敖隐",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/519.jpg",
+     "position": 7,
+     "k": 1,
+     "d": 0,
+     "a": 0,
+     "gold": 9219,
+     "hurt_rate": 0.2835,
+     "be_hurt_rate": 0.1484,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "流浪",
+     "hero": "武则天",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/136.jpg",
+     "position": 2,
+     "k": 0,
+     "d": 0,
+     "a": 9,
+     "gold": 8287,
+     "hurt_rate": 0.1512,
+     "be_hurt_rate": 0.0903,
+     "participation": 69.2308,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "烈峰峰",
+     "hero": "张飞",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/171.jpg",
+     "position": 4,
+     "k": 1,
+     "d": 0,
+     "a": 11,
+     "gold": 7030,
+     "hurt_rate": 0.0239,
+     "be_hurt_rate": 0.2805,
+     "participation": 92.3077,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "句号",
+     "hero": "赵云",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/107.jpg",
+     "position": 5,
+     "k": 5,
+     "d": 1,
+     "a": 5,
+     "gold": 10843,
+     "hurt_rate": 0.3232,
+     "be_hurt_rate": 0.2268,
+     "participation": 76.9231,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "无言",
+     "hero": "夏洛特",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/536.jpg",
+     "position": 6,
+     "k": 0,
+     "d": 0,
+     "a": 4,
+     "gold": 10231,
+     "hurt_rate": 0.2107,
+     "be_hurt_rate": 0.2468,
+     "participation": 30.7692,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "小屿",
+     "hero": "苍",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/177.jpg",
+     "position": 7,
+     "k": 7,
+     "d": 0,
+     "a": 3,
+     "gold": 11535,
+     "hurt_rate": 0.2911,
+     "be_hurt_rate": 0.1556,
+     "participation": 76.9231,
+     "mvp": true,
+     "lose_mvp": false
+    }
+   ]
+  },
+  {
+   "game_no": 3,
+   "battle_id": "501236240_5_1784293980",
+   "duration_s": 735,
+   "win_camp": 1,
+   "teams": {
+    "1": {
+     "team_id": "10005",
+     "name": "KSG",
+     "icon": "https://smobatv-pic.tga.qq.com/e7f3ca48aa29a89c5cf7e04d7f83534f.png",
+     "kills": 9,
+     "win": true
+    },
+    "2": {
+     "team_id": "10027",
+     "name": "成都AG超玩会",
+     "icon": "https://smhtv-pic.tga.qq.com/02e0582db3b0766ad6fab97e95743e6c.png",
+     "kills": 3,
+     "win": false
+    }
+   },
+   "bans": [
+    {
+     "camp": 1,
+     "hero": "元流之子(辅助)",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/585.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "鲁班大师",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/525.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "盾山",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/509.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "海月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/521.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "关羽",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/140.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "狂铁",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/503.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "白起",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/120.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "公孙离",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/199.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "蒙恬",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/527.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "橘右京",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/163.jpg"
+    }
+   ],
+   "picks": [
+    {
+     "camp": 1,
+     "hero": "沈梦溪",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/312.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "马超",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/518.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "张良",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/156.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "裴擒虎",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/502.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "空空儿",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/550.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "王昭君",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/152.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "百里守约",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/196.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "曹操",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/128.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "虞姬",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/174.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "梦奇",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/198.jpg"
+    }
+   ],
+   "players": [
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "流浪",
+     "hero": "沈梦溪",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/312.jpg",
+     "position": 2,
+     "k": 2,
+     "d": 0,
+     "a": 4,
+     "gold": 7534,
+     "hurt_rate": 0.1644,
+     "be_hurt_rate": 0.0805,
+     "participation": 66.6667,
+     "mvp": true,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "烈峰峰",
+     "hero": "空空儿",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/550.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 2,
+     "a": 7,
+     "gold": 6323,
+     "hurt_rate": 0.0198,
+     "be_hurt_rate": 0.2391,
+     "participation": 77.7778,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "句号",
+     "hero": "裴擒虎",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/502.jpg",
+     "position": 5,
+     "k": 3,
+     "d": 0,
+     "a": 3,
+     "gold": 10202,
+     "hurt_rate": 0.4187,
+     "be_hurt_rate": 0.2468,
+     "participation": 66.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "无言",
+     "hero": "曹操",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/128.jpg",
+     "position": 6,
+     "k": 2,
+     "d": 0,
+     "a": 5,
+     "gold": 9605,
+     "hurt_rate": 0.2004,
+     "be_hurt_rate": 0.2967,
+     "participation": 77.7778,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "小屿",
+     "hero": "虞姬",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/174.jpg",
+     "position": 7,
+     "k": 2,
+     "d": 1,
+     "a": 0,
+     "gold": 9084,
+     "hurt_rate": 0.1967,
+     "be_hurt_rate": 0.1368,
+     "participation": 22.2222,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "长生",
+     "hero": "王昭君",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/152.jpg",
+     "position": 2,
+     "k": 1,
+     "d": 2,
+     "a": 2,
+     "gold": 5576,
+     "hurt_rate": 0.0976,
+     "be_hurt_rate": 0.1635,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "大帅",
+     "hero": "张良",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/156.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 2,
+     "a": 3,
+     "gold": 5617,
+     "hurt_rate": 0.098,
+     "be_hurt_rate": 0.1589,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "钟意",
+     "hero": "梦奇",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/198.jpg",
+     "position": 5,
+     "k": 0,
+     "d": 1,
+     "a": 1,
+     "gold": 8188,
+     "hurt_rate": 0.3125,
+     "be_hurt_rate": 0.3155,
+     "participation": 33.3333,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "轩染",
+     "hero": "马超",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/518.jpg",
+     "position": 6,
+     "k": 2,
+     "d": 1,
+     "a": 0,
+     "gold": 7338,
+     "hurt_rate": 0.24,
+     "be_hurt_rate": 0.1933,
+     "participation": 66.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "一诺",
+     "hero": "百里守约",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/196.jpg",
+     "position": 7,
+     "k": 0,
+     "d": 3,
+     "a": 2,
+     "gold": 8328,
+     "hurt_rate": 0.2519,
+     "be_hurt_rate": 0.1687,
+     "participation": 66.6667,
+     "mvp": false,
+     "lose_mvp": false
+    }
+   ]
+  },
+  {
+   "game_no": 4,
+   "battle_id": "501236240_6_1784295677",
+   "duration_s": 1090,
+   "win_camp": 2,
+   "teams": {
+    "1": {
+     "team_id": "10005",
+     "name": "KSG",
+     "icon": "https://smobatv-pic.tga.qq.com/e7f3ca48aa29a89c5cf7e04d7f83534f.png",
+     "kills": 6,
+     "win": false
+    },
+    "2": {
+     "team_id": "10027",
+     "name": "成都AG超玩会",
+     "icon": "https://smhtv-pic.tga.qq.com/02e0582db3b0766ad6fab97e95743e6c.png",
+     "kills": 19,
+     "win": true
+    }
+   },
+   "bans": [
+    {
+     "camp": 1,
+     "hero": "元流之子(辅助)",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/585.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "鲁班大师",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/525.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "盾山",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/509.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "海月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/521.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "大司命",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/517.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "苍",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/177.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "马超",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/518.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "蚩奼",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/172.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "司空震",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/537.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "元流之子(坦克)",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/581.jpg"
+    }
+   ],
+   "picks": [
+    {
+     "camp": 1,
+     "hero": "少司缘",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/577.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "关羽",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/140.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "空空儿",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/550.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "安琪拉",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/142.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "公孙离",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/199.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "小乔",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/106.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "镜",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/531.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "云缨",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/538.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "项羽",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/135.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "莱西奥",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/545.jpg"
+    }
+   ],
+   "players": [
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "流浪",
+     "hero": "安琪拉",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/142.jpg",
+     "position": 2,
+     "k": 1,
+     "d": 6,
+     "a": 2,
+     "gold": 9447,
+     "hurt_rate": 0.1903,
+     "be_hurt_rate": 0.1495,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "烈峰峰",
+     "hero": "少司缘",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/577.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 5,
+     "a": 4,
+     "gold": 8913,
+     "hurt_rate": 0.046,
+     "be_hurt_rate": 0.2085,
+     "participation": 66.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "句号",
+     "hero": "云缨",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/538.jpg",
+     "position": 5,
+     "k": 2,
+     "d": 2,
+     "a": 1,
+     "gold": 12932,
+     "hurt_rate": 0.3247,
+     "be_hurt_rate": 0.1903,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "无言",
+     "hero": "项羽",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/135.jpg",
+     "position": 6,
+     "k": 2,
+     "d": 3,
+     "a": 4,
+     "gold": 9553,
+     "hurt_rate": 0.1255,
+     "be_hurt_rate": 0.3106,
+     "participation": 100,
+     "mvp": false,
+     "lose_mvp": true
+    },
+    {
+     "camp": 1,
+     "team": "KSG",
+     "player": "小屿",
+     "hero": "公孙离",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/199.jpg",
+     "position": 7,
+     "k": 1,
+     "d": 3,
+     "a": 2,
+     "gold": 12430,
+     "hurt_rate": 0.3135,
+     "be_hurt_rate": 0.1411,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "长生",
+     "hero": "小乔",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/106.jpg",
+     "position": 2,
+     "k": 2,
+     "d": 0,
+     "a": 14,
+     "gold": 11359,
+     "hurt_rate": 0.1429,
+     "be_hurt_rate": 0.1265,
+     "participation": 84.2105,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "大帅",
+     "hero": "空空儿",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/550.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 1,
+     "a": 18,
+     "gold": 9010,
+     "hurt_rate": 0.0403,
+     "be_hurt_rate": 0.2255,
+     "participation": 94.7368,
+     "mvp": true,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "钟意",
+     "hero": "镜",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/531.jpg",
+     "position": 5,
+     "k": 5,
+     "d": 0,
+     "a": 9,
+     "gold": 15336,
+     "hurt_rate": 0.3314,
+     "be_hurt_rate": 0.2509,
+     "participation": 73.6842,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "轩染",
+     "hero": "关羽",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/140.jpg",
+     "position": 6,
+     "k": 6,
+     "d": 1,
+     "a": 9,
+     "gold": 12988,
+     "hurt_rate": 0.1704,
+     "be_hurt_rate": 0.2325,
+     "participation": 78.9474,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "成都AG超玩会",
+     "player": "一诺",
+     "hero": "莱西奥",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/545.jpg",
+     "position": 7,
+     "k": 6,
+     "d": 4,
+     "a": 4,
+     "gold": 14017,
+     "hurt_rate": 0.315,
+     "be_hurt_rate": 0.1647,
+     "participation": 52.6316,
+     "mvp": false,
+     "lose_mvp": false
+    }
+   ]
+  },
+  {
+   "game_no": 5,
+   "battle_id": "501236240_8_1784297598",
+   "duration_s": 1258,
+   "win_camp": 1,
+   "teams": {
+    "1": {
+     "team_id": "10027",
+     "name": "成都AG超玩会",
+     "icon": "https://smhtv-pic.tga.qq.com/02e0582db3b0766ad6fab97e95743e6c.png",
+     "kills": 12,
+     "win": true
+    },
+    "2": {
+     "team_id": "10005",
+     "name": "KSG",
+     "icon": "https://smobatv-pic.tga.qq.com/e7f3ca48aa29a89c5cf7e04d7f83534f.png",
+     "kills": 6,
+     "win": false
+    }
+   },
+   "bans": [
+    {
+     "camp": 1,
+     "hero": "海月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/521.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "盾山",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/509.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "关羽",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/140.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "铠",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/193.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "不知火舞",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/157.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "蒙恬",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/527.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "武则天",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/136.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "白起",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/120.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "老夫子",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/139.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "小乔",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/106.jpg"
+    }
+   ],
+   "picks": [
+    {
+     "camp": 1,
+     "hero": "鲁班大师",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/525.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "元流之子(辅助)",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/585.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "狄仁杰",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/133.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "蚩奼",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/172.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "赵云",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/107.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "镜",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/531.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "西施",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/523.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "芈月",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/121.jpg"
+    },
+    {
+     "camp": 1,
+     "hero": "嬴政",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/110.jpg"
+    },
+    {
+     "camp": 2,
+     "hero": "司空震",
+     "icon": "https://res.edata.qq.com/sgame/static/images/hero/537.jpg"
+    }
+   ],
+   "players": [
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "长生",
+     "hero": "嬴政",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/110.jpg",
+     "position": 2,
+     "k": 4,
+     "d": 1,
+     "a": 4,
+     "gold": 13745,
+     "hurt_rate": 0.1829,
+     "be_hurt_rate": 0.1327,
+     "participation": 66.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "大帅",
+     "hero": "鲁班大师",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/525.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 1,
+     "a": 11,
+     "gold": 9970,
+     "hurt_rate": 0.0214,
+     "be_hurt_rate": 0.2612,
+     "participation": 91.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "钟意",
+     "hero": "赵云",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/107.jpg",
+     "position": 5,
+     "k": 6,
+     "d": 1,
+     "a": 5,
+     "gold": 16466,
+     "hurt_rate": 0.275,
+     "be_hurt_rate": 0.1718,
+     "participation": 91.6667,
+     "mvp": true,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "轩染",
+     "hero": "芈月",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/121.jpg",
+     "position": 6,
+     "k": 1,
+     "d": 0,
+     "a": 5,
+     "gold": 17038,
+     "hurt_rate": 0.2838,
+     "be_hurt_rate": 0.2247,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 1,
+     "team": "成都AG超玩会",
+     "player": "一诺",
+     "hero": "蚩奼",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/172.jpg",
+     "position": 7,
+     "k": 1,
+     "d": 3,
+     "a": 4,
+     "gold": 15076,
+     "hurt_rate": 0.237,
+     "be_hurt_rate": 0.2095,
+     "participation": 41.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "流浪",
+     "hero": "西施",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/523.jpg",
+     "position": 2,
+     "k": 1,
+     "d": 2,
+     "a": 3,
+     "gold": 8518,
+     "hurt_rate": 0.0739,
+     "be_hurt_rate": 0.0852,
+     "participation": 66.6667,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "烈峰峰",
+     "hero": "元流之子(辅助)",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/585.jpg",
+     "position": 4,
+     "k": 0,
+     "d": 2,
+     "a": 3,
+     "gold": 8422,
+     "hurt_rate": 0.0389,
+     "be_hurt_rate": 0.299,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "句号",
+     "hero": "镜",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/531.jpg",
+     "position": 5,
+     "k": 3,
+     "d": 1,
+     "a": 0,
+     "gold": 14525,
+     "hurt_rate": 0.3336,
+     "be_hurt_rate": 0.1761,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": true
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "无言",
+     "hero": "司空震",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/537.jpg",
+     "position": 6,
+     "k": 1,
+     "d": 5,
+     "a": 2,
+     "gold": 13804,
+     "hurt_rate": 0.2351,
+     "be_hurt_rate": 0.2262,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    },
+    {
+     "camp": 2,
+     "team": "KSG",
+     "player": "小屿",
+     "hero": "狄仁杰",
+     "hero_icon": "https://res.edata.qq.com/sgame/static/images/hero/133.jpg",
+     "position": 7,
+     "k": 1,
+     "d": 2,
+     "a": 2,
+     "gold": 16011,
+     "hurt_rate": 0.3185,
+     "be_hurt_rate": 0.2136,
+     "participation": 50,
+     "mvp": false,
+     "lose_mvp": false
+    }
+   ]
+  }
+ ]
+}

@@ -191,6 +191,10 @@ def main() -> None:
                 )
                 print(f"[{ts()}]     {'✅' if ok else '❌ 失败，详见日志'}", flush=True)
 
+            # 官方战绩
+            print(f'[{ts()}]   官方战绩…', flush=True)
+            run_step(['scripts.fetch_game_stats', '--match-id', match_id], log)
+
             # 终审 + 综合评 + 上云
             print(f"[{ts()}]   终审…", flush=True)
             run_step(["scripts.review_insights", "--all"], log)

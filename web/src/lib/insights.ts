@@ -90,11 +90,40 @@ export type MatchAggregate = {
   caster_count: number;
 };
 
+export type StatsPlayer = {
+  camp: number;
+  team: string;
+  player: string;
+  hero: string;
+  hero_icon: string;
+  k: number;
+  d: number;
+  a: number;
+  gold: number;
+  hurt_rate: number;
+  be_hurt_rate: number;
+  participation: number;
+  mvp: boolean;
+  lose_mvp: boolean;
+};
+
+/** 每局官方战绩 */
+export type GameStats = {
+  game_no: number;
+  duration_s: number;
+  win_camp: number;
+  teams: Record<string, { team_id: string; name: string; kills: number; win: boolean }>;
+  bans: { camp: number; hero: string; icon: string }[];
+  picks: { camp: number; hero: string; icon: string }[];
+  players: StatsPlayer[];
+};
+
 export type MatchInsights = {
   match: DbMatch | null;
   teams: Record<string, DbTeam>;
   opinions: CasterOpinion[];
   aggregate: MatchAggregate | null;
+  gameStats: Record<number, GameStats>;
 };
 
 // ---------- JSON → 行 的映射 ----------
@@ -270,6 +299,34 @@ async function fetchLocalOpinions(matchId: string): Promise<CasterOpinion[]> {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+async function fetchGameStats(sb: any, matchId: string): Promise<Record<number, GameStats>> {
+  const out: Record<number, GameStats> = {};
+  // 云端优先
+  if (sb) {
+    try {
+      const { data } = await sb
+        .from("match_game_stats")
+        .select("game_no,payload")
+        .eq("match_id", matchId);
+      for (const r of data || []) out[r.game_no] = r.payload as GameStats;
+      if (Object.keys(out).length) return out;
+    } catch {
+      /* fall through */
+    }
+  }
+  // 本地回退
+  try {
+    const { readFile } = await import("fs/promises");
+    const path = await import("path");
+    const p = path.join(process.cwd(), "..", "pipeline", "data", "insights", `_stats_${matchId}.json`);
+    const d = JSON.parse(await readFile(p, "utf-8"));
+    for (const g of d.games || []) out[g.game_no] = g as GameStats;
+  } catch {
+    /* 无战绩数据 */
+  }
+  return out;
+}
+
 async function fetchLocalAggregate(matchId: string): Promise<MatchAggregate | null> {
   try {
     const { readFile } = await import("fs/promises");
@@ -363,7 +420,7 @@ async function fetchCloudAggregate(sb: any, matchId: string): Promise<MatchAggre
 
 /** 比赛详情 + 各解说观点（云端优先，本地 JSON 回退） */
 export async function fetchMatchInsights(matchId: string): Promise<MatchInsights> {
-  const empty: MatchInsights = { match: null, teams: {}, opinions: [], aggregate: null };
+  const empty: MatchInsights = { match: null, teams: {}, opinions: [], aggregate: null, gameStats: {} };
   const sb = getSupabase();
   if (!sb) return empty;
   try {
@@ -386,7 +443,8 @@ export async function fetchMatchInsights(matchId: string): Promise<MatchInsights
     if (!opinions.length) opinions = await fetchLocalOpinions(matchId);
     const aggregate =
       (await fetchCloudAggregate(sb, matchId)) || (await fetchLocalAggregate(matchId));
-    return { match: match as DbMatch, teams, opinions, aggregate };
+    const gameStats = await fetchGameStats(sb, matchId);
+    return { match: match as DbMatch, teams, opinions, aggregate, gameStats };
   } catch {
     return empty;
   }
