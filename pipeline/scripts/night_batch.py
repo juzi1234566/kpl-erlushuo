@@ -82,7 +82,7 @@ def main() -> None:
     parser.add_argument("--date", help="YYYY-MM-DD，默认今天（北京时间）")
     parser.add_argument("--match-id", help="只处理这一场")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--engine", default="sensevoice", choices=["sensevoice", "paraformer"])
+    parser.add_argument("--engine", default="paraformer", choices=["paraformer", "sensevoice"])
     args = parser.parse_args()
 
     import os
