@@ -41,6 +41,7 @@ def main() -> None:
     parser.add_argument("--mid", type=int, default=None)
     parser.add_argument("--match-id", required=True)
     parser.add_argument("--ingest", action="store_true", help="写入 Supabase（需迁移 0002）")
+    parser.add_argument("--force-transcribe", action="store_true", help="忽略已有转写重跑（如换了热词）")
     args = parser.parse_args()
     pages = parse_pages(args.pages)
 
@@ -48,7 +49,7 @@ def main() -> None:
     from asr.speaker_attribution import attribute_speakers
     from db.supabase_client import SupabaseRest
     from media.audio_downloader import audio_key, download_audio
-    from vod_pipeline import _match_meta, build_insight_rows
+    from vod_pipeline import _match_meta, build_insight_rows, match_roster_and_hotwords
     from ai.insight_extractor import InsightExtractor
 
     key = audio_key(args.bvid, pages)
@@ -62,16 +63,22 @@ def main() -> None:
     wav = download_audio(args.bvid, audio_dir, pages=pages)
     print(f"[{time.strftime('%H:%M:%S')}] 音频就绪 {wav.name} ({wav.stat().st_size // 1024 // 1024} MB) 耗时 {time.time()-t0:.0f}s", flush=True)
 
+    # 1.5 选手名单 + 热词（官方对局数据）
+    roster, hotword = match_roster_and_hotwords(args.match_id)
+    print(f"[{time.strftime('%H:%M:%S')}] 名单 {len(roster)} 人 | 热词 {len(hotword.split())} 个", flush=True)
+
     # 2. 转写 + 归属
     t0 = time.time()
+    if args.force_transcribe and transcript_path.exists():
+        transcript_path.unlink()
     if transcript_path.exists():
         from asr.funasr_transcriber import load_transcript
 
         segments = load_transcript(transcript_path)
         print(f"[{time.strftime('%H:%M:%S')}] 复用已有转写 {len(segments)} 段", flush=True)
     else:
-        print(f"[{time.strftime('%H:%M:%S')}] 转写中（约 0.7x 实时）…", flush=True)
-        segments = transcribe(wav)
+        print(f"[{time.strftime('%H:%M:%S')}] 转写中（带热词，约 0.7x 实时）…", flush=True)
+        segments = transcribe(wav, hotword=hotword)
         print(f"[{time.strftime('%H:%M:%S')}] 转写完成 {len(segments)} 段 耗时 {time.time()-t0:.0f}s", flush=True)
 
     attribution = attribute_speakers(segments, wav)
@@ -95,7 +102,12 @@ def main() -> None:
     print(f"[{time.strftime('%H:%M:%S')}] 比赛: {meta.get('team_a')} {meta.get('score')} {meta.get('team_b')}，DeepSeek 分析中…", flush=True)
     t0 = time.time()
     extractor = InsightExtractor()
-    result = extractor.extract(segments=segments, speaker_map=attribution.mapping, match_meta=meta)
+    result = extractor.extract(
+        segments=segments,
+        speaker_map=attribution.mapping,
+        match_meta=meta,
+        roster=roster,
+    )
     if result.error:
         print(f"分析失败: {result.error}", flush=True)
         sys.exit(1)

@@ -28,7 +28,9 @@ MAP_SYSTEM = """你是电竞解说内容分析助手。你收到王者荣耀职�
 MAP_USER_TEMPLATE = """【比赛信息】
 {match_meta}
 
-【选手名单】（用于对齐人名，转写可能有错别字，请纠正到名单里的名字）
+【选手名单】（含本场所用英雄。转写是语音识别产物，人名/英雄名常有同音错字——
+如「小雨/小野」实为「小屿」、「中意」实为「钟意」——必须纠正对齐到名单；
+解说也常用英雄名代指选手，请按名单里的英雄归属换算成选手名）
 {roster}
 
 【转写片段】（格式：[毫秒时间戳] 文本）
@@ -93,7 +95,7 @@ class InsightExtractor:
         segments: list[Segment],
         speaker_map: dict[str, str],
         match_meta: dict[str, Any],
-        roster: Optional[list[str]] = None,
+        roster: Optional[list[dict[str, Any]]] = None,
     ) -> InsightResult:
         up_segments = [s for s in segments if speaker_map.get(s.speaker) == "up"]
         if not up_segments:

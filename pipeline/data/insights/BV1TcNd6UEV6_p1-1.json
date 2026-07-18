@@ -1,0 +1,118 @@
+{
+ "bvid": "BV1TcNd6UEV6",
+ "pages": [
+  1
+ ],
+ "caster": "可温",
+ "match_id": "2026071703",
+ "overall": {
+  "sentiment": "复杂",
+  "summary": "前期KSG盾山胜率高，但后期AG团战优势明显，最终AG以3:2获胜。解说对双方表现有褒有贬，武将状态起伏，小羽和无言表现不佳。",
+  "rating": 4,
+  "risk": 0
+ },
+ "teams": [
+  {
+   "name": "KSG",
+   "sentiment": "复杂",
+   "rating": 3,
+   "summary": "KSG盾山第一局胜率高，但后期团战乏力，解说认为这把赢不了。",
+   "risk": 0,
+   "quotes": [
+    {
+     "text": "毕竟手里是主要问题是 KSG，盾艾第一局胜率太高了",
+     "start_ms": 321180,
+     "speaker": "up"
+    },
+    {
+     "text": "但我觉得黑死这把赢不了",
+     "start_ms": 1167450,
+     "speaker": "up"
+    }
+   ]
+  },
+  {
+   "name": "成都AG超玩会",
+   "sentiment": "好评",
+   "rating": 4,
+   "summary": "AG后期阵容无敌，伤害高，团战好打，机会抓得好，中期不送两波就能赢。",
+   "risk": 0,
+   "quotes": [
+    {
+     "text": "只能说 AG 这波机这波机会抓的好呀",
+     "start_ms": 1320210,
+     "speaker": "up"
+    },
+    {
+     "text": "这把 AG 打团还是好打",
+     "start_ms": 1356970,
+     "speaker": "up"
+    }
+   ]
+  }
+ ],
+ "players": [
+  {
+   "name": "武将",
+   "sentiment": "复杂",
+   "rating": 4,
+   "summary": "武将前期状态不佳，需要醒一醒；但后期状态回升，不再任人拿捏，立功切团，有勇有谋不上头。",
+   "risk": 0,
+   "quotes": [
+    {
+     "text": "而且现在武将已经不是之前的武将了，可以任人拿捏了，随便抓的兄弟红 buff 直接又被今天武将不一样了",
+     "start_ms": 827930,
+     "speaker": "up"
+    }
+   ]
+  },
+  {
+   "name": "中意",
+   "sentiment": "好评",
+   "rating": 5,
+   "summary": "中意猪八戒熟练度很高，有点无敌。",
+   "risk": 0,
+   "quotes": [
+    {
+     "text": "猪八戒有点无敌呀",
+     "start_ms": 1204820,
+     "speaker": "up"
+    }
+   ]
+  },
+  {
+   "name": "无言",
+   "sentiment": "差评",
+   "rating": 2,
+   "summary": "无言扛不住，双人伤爆炸，有逐日却跑了，保K线没保住，被动被打出来。",
+   "risk": 0,
+   "quotes": [
+    {
+     "text": "无言已经倒下了",
+     "start_ms": 1581540,
+     "speaker": "up"
+    }
+   ]
+  },
+  {
+   "name": "小羽",
+   "sentiment": "差评",
+   "rating": 2,
+   "summary": "小羽有点弱了，玩不了了，第一时间跑了导致团战失利，死亡榜第一。",
+   "risk": 0,
+   "quotes": [
+    {
+     "text": "而且小雨有点弱了",
+     "start_ms": 1254710,
+     "speaker": "up"
+    },
+    {
+     "text": "小野玩不了了",
+     "start_ms": 1269250,
+     "speaker": "up"
+    }
+   ]
+  }
+ ],
+ "model": "deepseek-chat"
+}

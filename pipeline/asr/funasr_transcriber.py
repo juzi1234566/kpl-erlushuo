@@ -40,8 +40,17 @@ def _get_model():
     return _MODEL
 
 
-def transcribe(wav_path: Path, out_path: Optional[Path] = None) -> list[Segment]:
-    """转写整段音频，返回带说话人标签的分句列表。"""
+def transcribe(
+    wav_path: Path,
+    out_path: Optional[Path] = None,
+    *,
+    hotword: str = "",
+) -> list[Segment]:
+    """转写整段音频，返回带说话人标签的分句列表。
+
+    hotword：SeaCo-Paraformer 热词定制，空格分隔（选手名/战队名/英雄名等），
+    可显著提升专有名词识别率。
+    """
     if out_path and out_path.exists():
         return load_transcript(out_path)
 
@@ -49,7 +58,7 @@ def transcribe(wav_path: Path, out_path: Optional[Path] = None) -> list[Segment]
     result = model.generate(
         input=str(wav_path),
         batch_size_s=300,
-        hotword="",
+        hotword=hotword,
     )
     segments = _parse_result(result)
 

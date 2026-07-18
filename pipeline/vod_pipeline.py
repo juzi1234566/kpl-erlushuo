@@ -62,6 +62,47 @@ def _match_meta(db: SupabaseRest, match_id: str) -> dict[str, Any]:
     }
 
 
+def match_roster_and_hotwords(match_id: str) -> tuple[list[dict[str, Any]], str]:
+    """从官方对局数据取本场选手名单与热词表。
+
+    返回 (roster, hotword)：
+    - roster: [{"team": 队名, "player": 选手名, "heroes": [本场用过的英雄]}]
+    - hotword: 空格分隔的热词串（选手/战队/英雄），喂给 SeaCo-Paraformer
+    """
+    from sources.pvp_match_adapter import PvpMatchAdapter
+
+    players: dict[str, dict[str, Any]] = {}
+    teams: set[str] = set()
+    heroes: set[str] = set()
+    with PvpMatchAdapter(raw_dir=ROOT / "data" / "raw") as api:
+        battles = api.list_battles(str(match_id))
+        for bt in battles:
+            bid = bt.get("battle_id")
+            if not bid:
+                continue
+            b = api.get_battle(str(bid))
+            for p in b.get("battle_player_list") or []:
+                name = (p.get("player_name") or "").strip()
+                if not name:
+                    continue
+                team = (p.get("team_name") or "").strip()
+                hero = (p.get("hero_name") or "").strip()
+                teams.add(team)
+                if hero:
+                    heroes.add(hero)
+                entry = players.setdefault(name, {"team": team, "player": name, "heroes": set()})
+                if hero:
+                    entry["heroes"].add(hero)
+            api.sleep_politely()
+
+    roster = [
+        {"team": v["team"], "player": v["player"], "heroes": sorted(v["heroes"])}
+        for v in players.values()
+    ]
+    hot_terms = sorted({*players.keys(), *teams, *heroes})
+    return roster, " ".join(t for t in hot_terms if t)
+
+
 # ---------- 环节一：下载 ----------
 
 def process_vod_download(bvid: str, db: Optional[SupabaseRest] = None) -> Path:
