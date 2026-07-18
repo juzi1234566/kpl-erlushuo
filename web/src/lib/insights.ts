@@ -24,6 +24,8 @@ export type DbVodSource = {
   bvid: string;
   title: string | null;
   up_name: string | null;
+  caster_name: string | null;
+  page_start: number | null;
   pubdate: string | null;
   duration_s: number | null;
 };
@@ -85,7 +87,7 @@ export async function fetchMatchInsights(matchId: string): Promise<MatchInsights
     if (vodIds.length) {
       const { data: vodRows } = await sb
         .from("vod_sources")
-        .select("id,bvid,title,up_name,pubdate,duration_s")
+        .select("id,bvid,title,up_name,caster_name,page_start,pubdate,duration_s")
         .in("id", vodIds);
       vods = vodRows || [];
     }
@@ -101,9 +103,12 @@ export async function fetchMatchInsights(matchId: string): Promise<MatchInsights
   }
 }
 
-export function biliUrl(bvid: string, startMs?: number): string {
+export function biliUrl(bvid: string, startMs?: number, page?: number | null): string {
   const t = startMs ? Math.max(0, Math.floor(startMs / 1000)) : 0;
-  return `https://www.bilibili.com/video/${bvid}${t ? `?t=${t}` : ""}`;
+  const params: string[] = [];
+  if (page && page > 1) params.push(`p=${page}`);
+  if (t) params.push(`t=${t}`);
+  return `https://www.bilibili.com/video/${bvid}${params.length ? `?${params.join("&")}` : ""}`;
 }
 
 export function fmtTimestamp(ms: number): string {

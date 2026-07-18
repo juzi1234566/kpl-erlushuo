@@ -31,7 +31,15 @@ alter table vod_sources
   add column if not exists match_confidence numeric,                           -- 0-1
   add column if not exists match_method text,                                  -- title_teams_date / manual / none
   add column if not exists needs_review boolean not null default false,        -- 待定池标记
-  add column if not exists last_error text;
+  add column if not exists last_error text,
+  -- 合集型视频：一个 bvid 内多位主播、各占若干分P（如 kpl二路 的 110P 合集）
+  add column if not exists page_start int not null default 1,
+  add column if not exists page_end int,
+  add column if not exists caster_name text;                                   -- 主播名（展示用，UP账号名放 up_name）
+
+-- 同一 bvid 可拆多段（每位主播一行），唯一键改为 (bvid, page_start)
+alter table vod_sources drop constraint if exists vod_sources_bvid_key;
+create unique index if not exists uq_vod_sources_bvid_page on vod_sources(bvid, page_start);
 
 create index if not exists idx_vod_sources_match on vod_sources(match_id);
 create index if not exists idx_vod_sources_review on vod_sources(needs_review) where needs_review;

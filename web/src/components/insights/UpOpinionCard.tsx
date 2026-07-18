@@ -23,10 +23,12 @@ function Rating({ value }: { value: number | null }) {
 
 function QuoteLine({
   bvid,
+  page,
   text,
   startMs,
 }: {
   bvid: string;
+  page: number | null;
   text: string;
   startMs: number;
 }) {
@@ -34,7 +36,7 @@ function QuoteLine({
     <p className="text-sm leading-relaxed text-muted">
       「{text}」
       <a
-        href={biliUrl(bvid, startMs)}
+        href={biliUrl(bvid, startMs, page)}
         target="_blank"
         rel="noopener noreferrer"
         className="no ml-2 text-xs underline-offset-4 hover:underline"
@@ -61,11 +63,11 @@ export default function UpOpinionCard({
       {/* 头部：UP主 + 原视频 */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h3 className="text-lg tracking-wider">{vod.up_name || "二路解说"}</h3>
+          <h3 className="text-lg tracking-wider">{vod.caster_name || vod.up_name || "二路解说"}</h3>
           <span className="seal-ai">AI 提取</span>
         </div>
         <a
-          href={biliUrl(vod.bvid)}
+          href={biliUrl(vod.bvid, undefined, vod.page_start)}
           target="_blank"
           rel="noopener noreferrer"
           className="tag tag--accent transition-colors duration-500 hover:text-foreground"
@@ -95,7 +97,13 @@ export default function UpOpinionCard({
           </div>
           <p className="mb-2 text-[15px] leading-relaxed text-muted">{i.summary}</p>
           {(i.quotes || []).map((q, idx) => (
-            <QuoteLine key={idx} bvid={vod.bvid} text={q.text} startMs={q.start_ms} />
+            <QuoteLine
+              key={idx}
+              bvid={vod.bvid}
+              page={vod.page_start}
+              text={q.text}
+              startMs={q.start_ms}
+            />
           ))}
         </div>
       ))}
