@@ -1,0 +1,7 @@
+{
+  "collection_up_mid": 333332650,
+  "collection_up_name": "kpl二路",
+  "casters": ["可温", "时间", "知舟"],
+  "max_casters_per_match": 6,
+  "max_games_per_caster": 5
+}

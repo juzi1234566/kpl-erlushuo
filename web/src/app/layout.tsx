@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import GrainOverlay from "@/components/GrainOverlay";
 import Ornament from "@/components/Ornament";
+import FeedbackWidget from "@/components/FeedbackWidget";
 
 export const metadata: Metadata = {
   title: "KPL二路说 · 二路解说观点聚合",
@@ -59,6 +60,7 @@ export default function RootLayout({
           </div>
         </footer>
 
+        <FeedbackWidget />
         <GrainOverlay />
       </body>
     </html>

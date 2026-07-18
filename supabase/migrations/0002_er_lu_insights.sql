@@ -86,6 +86,31 @@ alter table vod_sources enable row level security;
 drop policy if exists vod_sources_public_read on vod_sources;
 create policy vod_sources_public_read on vod_sources for select using (true);
 
+-- ============ 用户反馈 ============
+create table if not exists feedback (
+  id uuid primary key default gen_random_uuid(),
+  content text not null check (char_length(content) between 1 and 2000),
+  contact text check (char_length(contact) <= 200),   -- 可选联系方式
+  page text,                                          -- 提交时所在页面
+  created_at timestamptz not null default now()
+);
+alter table feedback enable row level security;
+drop policy if exists feedback_anon_insert on feedback;
+create policy feedback_anon_insert on feedback for insert with check (true);
+-- 不开放读取：只有 service_role 能看
+
+-- ============ 跨解说综合评 ============
+create table if not exists match_aggregates (
+  match_id text primary key references matches(id),
+  payload jsonb not null,          -- {headline, bp_read, pace, overall, teams, players, controversy}
+  model text,
+  caster_count int,
+  updated_at timestamptz not null default now()
+);
+alter table match_aggregates enable row level security;
+drop policy if exists match_aggregates_public_read on match_aggregates;
+create policy match_aggregates_public_read on match_aggregates for select using (true);
+
 -- ============ job_kind 枚举扩展 ============
 -- ！！以下四条需在 SQL Editor 中逐条单独执行（不能与上面同事务）！！
 -- alter type job_kind add value if not exists 'vod_scan';

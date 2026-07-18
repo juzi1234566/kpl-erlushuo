@@ -48,11 +48,26 @@ def transcribe(
 ) -> list[Segment]:
     """转写整段音频，返回带说话人标签的分句列表。
 
-    hotword：SeaCo-Paraformer 热词定制，空格分隔（选手名/战队名/英雄名等），
-    可显著提升专有名词识别率。
+    引擎由环境变量 ASR_ENGINE 控制：
+    - paraformer（默认）：质量最好，支持热词，CPU RTF ~0.7
+    - sensevoice：快 3-5 倍（RTF ~0.2），无热词，配 cam++ 声纹聚类分说话人
     """
     if out_path and out_path.exists():
         return load_transcript(out_path)
+
+    import os
+
+    if (os.getenv("ASR_ENGINE") or "").lower() == "sensevoice":
+        from asr.sensevoice_transcriber import transcribe_sensevoice
+
+        segments = transcribe_sensevoice(wav_path)
+        if out_path:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(
+                json.dumps({"segments": [asdict(s) for s in segments]}, ensure_ascii=False, indent=1),
+                encoding="utf-8",
+            )
+        return segments
 
     model = _get_model()
     result = model.generate(

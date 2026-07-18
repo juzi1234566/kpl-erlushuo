@@ -94,7 +94,11 @@ def extract_title_date(title: str, ref_year: int) -> Optional[datetime]:
 
 
 def _parse_ts(value: Any) -> Optional[datetime]:
-    """matches.start_time → 北京时间 naive datetime（标题/发布时间都是北京时间）。"""
+    """matches.start_time → 北京时间 naive datetime。
+
+    注意：官方接口给的就是北京时间字面量，入库时被打上了 +00:00 后缀——
+    所以这里按【字面量】读取，绝不做时区换算（fmtTime 同理）。
+    """
     if value is None or value == "":
         return None
     if isinstance(value, (int, float)):
@@ -102,15 +106,11 @@ def _parse_ts(value: Any) -> Optional[datetime]:
     s = str(value)
     if s.isdigit():
         return datetime.fromtimestamp(int(s))
+    s = s.replace("Z", "").split("+")[0]
     try:
-        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return datetime.fromisoformat(s)
     except ValueError:
         return None
-    if dt.tzinfo is not None:
-        # 库里存 UTC，转北京时间再去 tz
-        dt = dt + timedelta(hours=8) - (dt.utcoffset() or timedelta())
-        dt = dt.replace(tzinfo=None)
-    return dt
 
 
 def guess_match(
