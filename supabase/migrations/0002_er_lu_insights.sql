@@ -54,13 +54,15 @@ create table if not exists commentary_insights (
   id uuid primary key default gen_random_uuid(),
   vod_id uuid not null references vod_sources(id) on delete cascade,
   match_id text not null references matches(id),
-  subject_type text not null check (subject_type in ('overall','team','player')),
+  subject_type text not null check (subject_type in
+    ('overall','team','player','bp','flow','blame','golden')),
   subject_id text,                         -- teams.id / 选手 id，匹配不上留 null
   subject_name text not null,              -- AI 输出的原始名字（展示兜底）
   sentiment text not null check (sentiment in ('好评','差评','中立','复杂')),
   rating smallint check (rating between 1 and 5),
-  summary text not null,                   -- AI 转述的评价（1-3 句，已过滤辱骂）
+  summary text not null,                   -- AI 转述的详细评价（已过滤辱骂）
   quotes jsonb not null default '[]'::jsonb, -- [{text, start_ms, end_ms, speaker}]
+  extra jsonb not null default '{}'::jsonb,  -- 板块专属结构：predictions/turning_points/highlight/main 等
   ai_risk numeric,
   is_ai_generated boolean not null default true,
   model text,

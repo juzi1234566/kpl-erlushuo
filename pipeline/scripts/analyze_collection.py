@@ -125,9 +125,13 @@ def main() -> None:
         "pages": pages,
         "caster": args.caster,
         "match_id": args.match_id,
+        "bp": result.bp,
+        "flow": result.flow,
         "overall": result.overall,
         "teams": result.teams,
         "players": result.players,
+        "blame": result.blame,
+        "golden_quotes": result.golden_quotes,
         "model": result.model,
     }
     insights_path.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -161,12 +165,17 @@ def main() -> None:
         print(f"已入库 vod={vod_id} insights x{len(insight_rows)}（状态 pending，审核后前台可见）", flush=True)
 
     # 预览
+    if result.bp:
+        print("\n【BP】", str(result.bp.get("summary"))[:100], flush=True)
+    if result.flow:
+        print("【局势】前期:", str(result.flow.get("early"))[:60], flush=True)
     if result.overall:
-        print("\n【整体】", result.overall.get("sentiment"), "-", result.overall.get("summary"), flush=True)
-    for t in result.teams:
-        print(f"【{t.get('name')}】{t.get('sentiment')} - {str(t.get('summary'))[:60]}", flush=True)
+        print("【整体】", result.overall.get("sentiment"), "-", str(result.overall.get("summary"))[:100], flush=True)
     for p in result.players[:5]:
-        print(f"【{p.get('name')}】{p.get('sentiment')} - {str(p.get('summary'))[:60]}", flush=True)
+        print(f"【{p.get('name')}】{p.get('sentiment')} - {str(p.get('summary'))[:70]}", flush=True)
+    if result.blame:
+        print("【分锅】", str(result.blame.get("summary"))[:80], flush=True)
+    print(f"【金句】x{len(result.golden_quotes)}", flush=True)
     print("E2E_DONE", flush=True)
 
 

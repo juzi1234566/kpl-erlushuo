@@ -232,7 +232,13 @@ def build_insight_rows(
         except (TypeError, ValueError):
             return None
 
-    def add(subject_type: str, name: str, item: dict[str, Any], subject_id: Optional[str]) -> None:
+    def add(
+        subject_type: str,
+        name: str,
+        item: dict[str, Any],
+        subject_id: Optional[str] = None,
+        extra: Optional[dict[str, Any]] = None,
+    ) -> None:
         sentiment = item.get("sentiment")
         if sentiment not in ("好评", "差评", "中立", "复杂"):
             sentiment = "中立"
@@ -248,22 +254,50 @@ def build_insight_rows(
                 "subject_name": name,
                 "sentiment": sentiment,
                 "rating": clamp_rating(item.get("rating")),
-                "summary": summary[:600],
+                "summary": summary[:2000],
                 "quotes": item.get("quotes") or [],
+                "extra": extra or {},
                 "ai_risk": item.get("risk"),
                 "model": model,
                 "status": "pending",
             }
         )
 
+    if result.bp:
+        add("bp", "BP与阵容", result.bp, extra={"predictions": result.bp.get("predictions") or []})
+    if result.flow:
+        flow_summary = "\n".join(
+            f"【{label}】{result.flow.get(key)}"
+            for key, label in (("early", "前期"), ("mid", "中期"), ("late", "后期"))
+            if result.flow.get(key)
+        )
+        add(
+            "flow",
+            "局势走向",
+            {**result.flow, "summary": flow_summary},
+            extra={"turning_points": result.flow.get("turning_points") or []},
+        )
     if result.overall:
-        add("overall", "整场比赛", result.overall, None)
+        add("overall", "整场比赛", result.overall)
     for t in result.teams:
         name = (t.get("name") or "").strip()
         if name:
-            add("team", name, t, alias_to_tid.get(name.upper()))
+            add("team", name, t, subject_id=alias_to_tid.get(name.upper()))
     for p in result.players:
         name = (p.get("name") or "").strip()
         if name:
-            add("player", name, p, None)
+            add(
+                "player",
+                name,
+                p,
+                extra={"highlight": p.get("highlight") or "", "lowlight": p.get("lowlight") or ""},
+            )
+    if result.blame:
+        add("blame", "赛后分锅", result.blame, extra={"main": result.blame.get("main") or []})
+    if result.golden_quotes:
+        add(
+            "golden",
+            "金句时刻",
+            {"summary": "本场解说金句", "sentiment": "中立", "quotes": result.golden_quotes},
+        )
     return rows

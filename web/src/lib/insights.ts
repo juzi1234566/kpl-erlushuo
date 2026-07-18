@@ -33,18 +33,30 @@ export type DbVodSource = {
 export type InsightQuote = {
   text: string;
   start_ms: number;
+  verdict?: string; // 预测：应验 / 打脸 / 未验证
+  note?: string;
+  context?: string;
+};
+
+export type InsightExtra = {
+  predictions?: InsightQuote[];
+  turning_points?: { desc: string; quote?: InsightQuote | null }[];
+  highlight?: string;
+  lowlight?: string;
+  main?: { name: string; reason: string }[];
 };
 
 export type DbCommentaryInsight = {
   id: string;
   vod_id: string;
   match_id: string;
-  subject_type: "overall" | "team" | "player";
+  subject_type: "overall" | "team" | "player" | "bp" | "flow" | "blame" | "golden";
   subject_name: string;
   sentiment: "好评" | "差评" | "中立" | "复杂";
   rating: number | null;
   summary: string;
   quotes: InsightQuote[] | null;
+  extra: InsightExtra | null;
 };
 
 export type MatchInsights = {
@@ -82,7 +94,13 @@ async function fetchLocalInsights(matchId: string): Promise<Pick<MatchInsights, 
       const push = (
         subject_type: DbCommentaryInsight["subject_type"],
         subject_name: string,
-        item: { sentiment?: string; rating?: number; summary?: string; quotes?: InsightQuote[] },
+        item: {
+          sentiment?: string;
+          rating?: number;
+          summary?: string;
+          quotes?: InsightQuote[];
+        } | null,
+        extra: InsightExtra = {},
       ) => {
         if (!item?.summary) return;
         rows.push({
@@ -95,11 +113,33 @@ async function fetchLocalInsights(matchId: string): Promise<Pick<MatchInsights, 
           rating: item.rating ?? null,
           summary: item.summary,
           quotes: item.quotes || [],
+          extra,
         });
       };
+      if (d.bp) push("bp", "BP与阵容", d.bp, { predictions: d.bp.predictions || [] });
+      if (d.flow) {
+        const flowSummary = [
+          d.flow.early && `【前期】${d.flow.early}`,
+          d.flow.mid && `【中期】${d.flow.mid}`,
+          d.flow.late && `【后期】${d.flow.late}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+        push("flow", "局势走向", { ...d.flow, summary: flowSummary }, {
+          turning_points: d.flow.turning_points || [],
+        });
+      }
       if (d.overall) push("overall", "整场比赛", d.overall);
       for (const t of d.teams || []) push("team", t.name, t);
-      for (const p of d.players || []) push("player", p.name, p);
+      for (const p of d.players || [])
+        push("player", p.name, p, { highlight: p.highlight, lowlight: p.lowlight });
+      if (d.blame) push("blame", "赛后分锅", d.blame, { main: d.blame.main || [] });
+      if (d.golden_quotes?.length)
+        push("golden", "金句时刻", {
+          summary: "本场解说金句",
+          sentiment: "中立",
+          quotes: d.golden_quotes,
+        });
       insightsByVod[vodId] = rows;
     }
     return { vods, insightsByVod };
