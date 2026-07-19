@@ -297,8 +297,7 @@ async function fetchLocalOpinions(matchId: string): Promise<CasterOpinion[]> {
     return [];
   }
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 async function fetchGameStats(sb: any, matchId: string): Promise<Record<number, GameStats>> {
   const out: Record<number, GameStats> = {};
   // 云端优先
