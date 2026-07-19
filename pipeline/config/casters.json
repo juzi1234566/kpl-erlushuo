@@ -1,6 +1,8 @@
 {
   "collection_up_mid": 333332650,
   "collection_up_name": "kpl二路",
+  "video_must_contain": ["二路"],
+  "video_exclude": ["第一视角", "选手视角", "语音"],
   "casters": ["可温", "时间", "知舟"],
   "max_casters_per_match": 6,
   "max_games_per_caster": 5

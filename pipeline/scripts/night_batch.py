@@ -142,15 +142,27 @@ def main() -> None:
                 print("提示：浏览器登录 B站 后把 SESSDATA 填入 pipeline/.env 可大幅降低风控概率", flush=True)
                 return
 
+        # 标题过滤：只要二路解说视频，排除第一视角等
+        must = cfg.get("video_must_contain") or []
+        exclude = cfg.get("video_exclude") or []
+
+        def title_ok(title: str) -> bool:
+            if must and not any(k in title for k in must):
+                return False
+            return not any(k in title for k in exclude)
+
         for m in targets:
             match_id = str(m["id"])
             print(f"[{ts()}] ── 比赛 {match_id} ──", flush=True)
 
-            # 定位该场的合集视频
+            # 定位该场的合集视频（过标题过滤）
             hit = None
             for v in videos:
+                title = v.get("title") or ""
+                if not title_ok(title):
+                    continue
                 pub = datetime.fromtimestamp(int(v.get("created") or 0))
-                g = guess_match(v.get("title") or "", pub, matches)
+                g = guess_match(title, pub, matches)
                 if g.match_id == match_id and g.confidence >= 0.8:
                     hit = v
                     break
