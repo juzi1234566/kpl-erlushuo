@@ -58,12 +58,14 @@ def main() -> None:
     db = SupabaseRest()
     print("Supabase OK:", db.url)
 
-    # memes upsert by slug — table uses uuid id, so we need unique slug
-    # PostgREST on_conflict=slug requires unique constraint on slug (we have it)
-    seed_memes = load_seed_memes()
-    print(f"upsert memes x{len(seed_memes)}")
-    # memes table: slug unique — but upsert needs primary key or unique cols
-    db.upsert("memes", seed_memes, on_conflict="slug")
+    # 梗百科已下线：种子文件存在才同步（服务器上无此文件，直接跳过）
+    if SEED_MEMES_JSON.exists():
+        seed_memes = load_seed_memes()
+        print(f"upsert memes x{len(seed_memes)}")
+        db.upsert("memes", seed_memes, on_conflict="slug")
+    elif args.memes_only:
+        print("seed-memes.json 不存在，跳过")
+        return
 
     if args.memes_only:
         print("done (memes only)")

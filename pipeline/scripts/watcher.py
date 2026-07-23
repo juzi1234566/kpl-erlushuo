@@ -32,6 +32,7 @@ PYTHON = sys.executable
 POLL_MINUTES = 10
 MATCH_REFRESH_MINUTES = 60
 BACKOFF_MINUTES = 30  # B站风控后的退避
+STALE_DAYS = 3  # 只追这几天内发布的视频，更早的存量不补跑
 
 
 def ts() -> str:
@@ -83,7 +84,6 @@ def main() -> None:
 
             # 赛程缓存（每小时刷新一次，先 sync 再读）
             if time.time() - matches_at > MATCH_REFRESH_MINUTES * 60:
-                run_step(["scripts.sync_to_supabase", "--skip-matches"])  # 联赛信息
                 run_step(["scripts.sync_to_supabase"])  # 赛程
                 db = SupabaseRest()
                 matches = db.select(
@@ -105,23 +105,37 @@ def main() -> None:
                     if any(k in title for k in exclude):
                         continue
                     pub = datetime.fromtimestamp(int(v.get("created") or 0))
+                    if (datetime.now() - pub).days > STALE_DAYS:
+                        # 太旧的视频不追（上线前的存量内容），标记跳过
+                        state["processed_bvids"].append(bvid)
+                        save_state(state)
+                        continue
                     g = guess_match(title, pub, matches)
                     if not g.match_id or g.confidence < 0.8:
+                        continue
+
+                    # 每场比赛的主播总预算（同场比赛可能分多个视频发布，如 B站阵容/外站阵容各一个）
+                    done_casters = state.setdefault("match_casters", {}).setdefault(g.match_id, [])
+                    budget = max_casters - len(done_casters)
+                    if budget <= 0:
+                        log(f"⏭️ {bvid} 比赛 {g.match_id} 主播预算已满，跳过 | {title[:40]}")
+                        state["processed_bvids"].append(bvid)
+                        save_state(state)
                         continue
 
                     log(f"🆕 新视频 {bvid} → 比赛 {g.match_id} | {title[:40]}")
                     api.sleep_politely()
                     view = api.get_view(bvid)
                     groups = parse_caster_groups(view.get("pages") or [])
-                    ordered = [c for c in wanted if c in groups]
-                    ordered += [c for c in groups if c not in ordered]
-                    ordered = ordered[:max_casters]
-                    log(f"  主播: {ordered}（合集共 {len(groups)} 位）")
+                    ordered = [c for c in wanted if c in groups and c not in done_casters]
+                    ordered += [c for c in groups if c not in ordered and c not in done_casters]
+                    ordered = ordered[:budget]
+                    log(f"  主播: {ordered}（合集共 {len(groups)} 位，本场预算余 {budget}）")
 
                     run_step(["scripts.fetch_game_stats", "--match-id", g.match_id])
                     for caster in ordered:
                         pages = groups[caster][:max_games]
-                        run_step(
+                        ok = run_step(
                             [
                                 "scripts.analyze_collection",
                                 "--bvid", bvid,
@@ -132,6 +146,9 @@ def main() -> None:
                                 "--match-id", g.match_id,
                             ]
                         )
+                        if ok:
+                            done_casters.append(caster)
+                            save_state(state)
                     run_step(["scripts.review_insights", "--all"])
                     run_step(["scripts.aggregate_match", "--match-id", g.match_id])
                     run_step(["scripts.ingest_insights", "--match-id", g.match_id])
