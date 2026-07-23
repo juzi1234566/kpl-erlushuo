@@ -170,7 +170,7 @@ function GameSections({
           )}
           {(blame.extra?.main || []).map((m, i) => (
             <p key={i} className="text-sm text-muted">
-              <span className="seal-ai mr-2">主责</span>
+              <span className="seal-ai mr-2">关键点</span>
               <span className="font-semibold text-foreground">{m.name}</span> — {m.reason}
             </p>
           ))}

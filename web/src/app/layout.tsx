@@ -8,7 +8,7 @@ import FeedbackWidget from "@/components/FeedbackWidget";
 export const metadata: Metadata = {
   title: "KPL二路说 · 二路解说观点聚合",
   description:
-    "比赛打得怎么样，听二路解说怎么说。AI 自动聚合各家二路视频观点：BP 点评、选手评价、赛后分锅、金句时刻（非官方粉丝站）。",
+    "比赛打得怎么样，听二路解说怎么说。AI 自动聚合各家二路视频观点：BP 点评、选手评价、赛后复盘、金句时刻（非官方粉丝站）。",
 };
 
 const NAV = [
