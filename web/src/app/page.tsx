@@ -1,8 +1,5 @@
 import Link from "next/link";
-import { listAnalyzedMatches } from "@/lib/insights";
 import Ornament from "@/components/Ornament";
-
-export const dynamic = "force-dynamic";
 
 const 卖点 = [
   { 题: "BP 点评", 文: "这手 BP 布置了什么思路，赛前预判有没有应验" },
@@ -11,15 +8,7 @@ const 卖点 = [
   { 题: "金句时刻", 文: "解说的精彩原声，点时间戳直跳原视频" },
 ];
 
-function fmtDate(iso: string | null): string {
-  if (!iso) return "";
-  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  return m ? `${Number(m[2])}月${Number(m[3])}日` : "";
-}
-
-export default async function HomePage() {
-  const analyzed = await listAnalyzedMatches();
-
+export default function HomePage() {
   return (
     <div className="space-y-20">
       {/* ---------- 首屏 ---------- */}
@@ -46,36 +35,6 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
-
-      {/* ---------- 最新观点 ---------- */}
-      {analyzed.length > 0 && (
-        <section className="enter-1">
-          <div className="mb-8 text-center">
-            <p className="tag tag--accent mb-3">最新</p>
-            <h2 className="text-2xl tracking-[0.15em]">已出观点的比赛</h2>
-          </div>
-          <div className="grid gap-5 md:grid-cols-2">
-            {analyzed.slice(0, 6).map((m) => (
-              <Link key={m.match_id} href={`/matches/${m.match_id}`} className="plate block p-6">
-                <p className="tag mb-3">
-                  {fmtDate(m.match?.start_time || null)}
-                  {m.match?.stage_desc ? ` · ${m.match.stage_desc}` : ""}
-                </p>
-                <p className="text-lg tracking-wider">
-                  {m.teamNames[0] || "对阵"}{" "}
-                  <span className="no mx-1 text-sm">
-                    {m.match ? `${m.match.score1} : ${m.match.score2}` : "对"}
-                  </span>{" "}
-                  {m.teamNames[1] || ""}
-                </p>
-                <p className="tag tag--accent mt-4">
-                  {m.casters.length} 位解说观点 · {m.casters.slice(0, 4).join(" / ")}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* ---------- 能看到什么 ---------- */}
       <section className="enter-2">

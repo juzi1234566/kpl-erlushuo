@@ -42,12 +42,46 @@ async function loadTeamNames(rows: Row[]): Promise<Record<string, string>> {
   return names;
 }
 
+/** 已完赛场次各自出了哪些主播的观点（game_no=0 是整场层，approved 才算数） */
+async function loadCasters(matchIds: string[]): Promise<Record<string, string[]>> {
+  const byMatch: Record<string, string[]> = {};
+  const sb = getSupabase();
+  if (!sb || !matchIds.length) return byMatch;
+  try {
+    const { data: rows } = await sb
+      .from("commentary_insights")
+      .select("match_id,vod_id")
+      .eq("status", "approved")
+      .eq("game_no", 0)
+      .in("match_id", matchIds);
+    if (!rows?.length) return byMatch;
+    const vodIds = [...new Set(rows.map((r) => r.vod_id))];
+    const { data: vodRows } = await sb
+      .from("vod_sources")
+      .select("id,caster_name,up_name")
+      .in("id", vodIds);
+    const casterOf: Record<string, string> = {};
+    for (const v of vodRows || []) casterOf[v.id] = v.caster_name || v.up_name || "解说";
+    const seen: Record<string, Set<string>> = {};
+    for (const r of rows) {
+      const set = (seen[r.match_id] ||= new Set());
+      set.add(casterOf[r.vod_id] || "解说");
+    }
+    for (const [mid, set] of Object.entries(seen)) byMatch[mid] = [...set];
+  } catch {
+    /* ignore */
+  }
+  return byMatch;
+}
+
 export default async function MatchesPage() {
   const rows = await loadMatches();
   const teamNames = rows?.length ? await loadTeamNames(rows) : {};
+  const finishedIds = (rows || []).filter((r) => r.status === 2).map((r) => r.id);
+  const casters = finishedIds.length ? await loadCasters(finishedIds) : {};
 
   const matchCount = rows?.length ?? 0;
-  const finished = rows?.filter((r) => r.status === 2).length ?? 0;
+  const finished = finishedIds.length;
 
   return (
     <div className="space-y-12">
@@ -89,6 +123,9 @@ export default async function MatchesPage() {
             {rows.slice(0, 30).map((m, i) => {
               const t1 = m.team1_id ? teamNames[m.team1_id] : undefined;
               const t2 = m.team2_id ? teamNames[m.team2_id] : undefined;
+              const names = casters[m.id];
+              const hasOpinions = m.status === 2 && !!names?.length;
+
               const row = (
                 <>
                   <div className="flex items-baseline gap-5">
@@ -100,19 +137,27 @@ export default async function MatchesPage() {
                     </span>
                   </div>
                   <div className="flex items-baseline gap-5">
-                    <span className={`tracking-[0.15em] ${m.status === 2 ? "" : "text-faint"}`}>
-                      {m.status === 2 ? `${m.score1 ?? "-"} : ${m.score2 ?? "-"}` : ""}
-                    </span>
-                    <span className={`tag ${m.status === 2 ? "tag--accent" : ""}`}>
-                      {m.status === 2 ? "看观点 →" : "未开始"}
-                    </span>
+                    {m.status === 2 && (
+                      <span className="tracking-[0.15em]">
+                        {m.score1 ?? "-"} : {m.score2 ?? "-"}
+                      </span>
+                    )}
+                    {hasOpinions ? (
+                      <span className="tag tag--accent">
+                        {names!.length} 位解说 · {names!.slice(0, 3).join("/")} →
+                      </span>
+                    ) : m.status === 2 ? (
+                      <span className="tag text-faint">观点整理中</span>
+                    ) : (
+                      <span className="tag text-faint">未开始</span>
+                    )}
                   </div>
                 </>
               );
               const cls = `flex flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm transition-colors duration-500 hover:bg-[rgba(47,122,125,0.07)] ${
                 i > 0 ? "border-t border-border/30" : ""
               }`;
-              return m.status === 2 ? (
+              return hasOpinions ? (
                 <Link key={m.id} href={`/matches/${m.id}`} className={cls}>
                   {row}
                 </Link>
