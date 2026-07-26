@@ -1,84 +1,87 @@
-# 梗局 · KPL 粉丝玩梗社区（kpl-meme）
+# KPL二路说 · 二路解说观点聚合（kpl-meme）
 
-AI 驱动的 KPL 垂直玩梗社区（to C）。**非官方产品**。  
-站内品牌：**梗局**；副标题可用「KPL 粉丝社区」——域名/商标请勿使用「KPL」本体。
+AI 自动聚合 B站「二路解说」视频观点的 KPL 粉丝站。**非官方产品**。
 
-> 基于计划：`KPL AI 玩梗社区 — 可行性调研与实施计划`  
-> 目标锚点：2026-08-17 MVP 上线（季后赛流量 + 秋招作品双窗口）
+> 站点定位：KPL 二路解说视频太多看不完，AI 听完每一家的解说音频，
+> 按比赛整理成「谁打得好、锅是谁的、预测有没有应验」的观点摘要，原话引用可跳转回原视频对应时间点。
 
-## 战略约束（MVP）
+线上地址：https://erlushuo.xyz （同 https://kpl-meme.vercel.app）
 
-1. **网站先行**，小程序延后到有工商主体后
-2. AI 必须**明确标注身份**（禁止伪装真实用户暖场）
-3. 数据主源：官方 `prod.comp.smoba.qq.com/leaguesite/*`（开放 JSON，需 Referer）
+## 产品形态
+
+1. 固定信任的 B站「二路解说」合集账号（如 up 主 `kpl二路`）作为视频来源
+2. 服务器 7×24 小时轮询新投稿，标题匹配到已完赛场次后自动拉取音频
+3. FunASR（paraformer-zh + cam++）转写 + 说话人分离，只保留解说人声，过滤掉背景官方解说
+4. DeepSeek 提取「BP 点评 / 选手评价 / 赛后复盘 / 金句时刻」等结构化观点
+5. 按比赛聚合展示，AI 生成内容全部标注身份，原话可跳转 B站原视频时间戳
 
 ## 仓库结构
 
 ```
 kpl-meme/
-├── docs/                 # PRD、决策记录、合规声明草稿
-├── supabase/migrations/  # Postgres schema + RLS
-├── pipeline/             # 赛事同步 / AI worker（Python）
-│   ├── sources/          # pvp 官方适配器
-│   ├── signals/          # 规则梗点
-│   ├── ai/               # 生梗 + 自评
-│   └── scripts/          # 回填 / spike / 本地验收
-└── web/                  # Next.js App Router（Vercel）
+├── docs/                    # PRD、决策记录
+├── supabase/migrations/     # Postgres schema + RLS（0001 赛程/梗百科，0002 二路观点聚合）
+├── pipeline/                # Python：赛事同步 / 转写 / AI 分析 / 云端监听
+│   ├── sources/             # 官方赛事 API + B站 UP 主投稿适配器
+│   ├── media/                # 音频下载（B站 API + CDN 直连）
+│   ├── asr/                  # FunASR 转写 + 说话人归属
+│   ├── ai/                    # DeepSeek 观点提取 / 终审 / 系列赛汇总
+│   ├── signals/               # 视频 ↔ 比赛匹配
+│   └── scripts/                # 各类入口脚本（见下）
+└── web/                     # Next.js App Router（Vercel）
+    └── src/app/              # 首页 / 赛程 / 比赛详情 / 选手页 / 关于
 ```
+
+### pipeline 关键脚本
+
+| 脚本 | 用途 |
+|---|---|
+| `scripts.watcher` | **服务器常驻**：轮询 UP 主新投稿，逐主播全链处理并增量上云，`systemd` 托管 |
+| `scripts.analyze_collection` | 单个 (视频, 主播) 全链：下载→转写→说话人归属→逐局分析→系列赛汇总→终审 |
+| `scripts.sync_to_supabase` | 官方赛程/战绩同步到 Supabase |
+| `scripts.ingest_insights` / `aggregate_match` / `review_insights` | 观点入库 / 跨解说综合评 / 审核态刷新 |
+| `scripts.scan_up_videos` | 手动扫描指定 UP 主投稿（`--dry-run` 核对匹配） |
 
 ## 快速开始
 
-### 1. 赛事管线（本地）
+### 1. pipeline（本地）
 
 ```powershell
-cd C:\Users\18413\Desktop\kpl-meme\pipeline
+cd pipeline
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+# torch 需先装 CPU 轮子，再装其余依赖
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 
-# 列出赛季
-python -m scripts.spike_api --leagues
-
-# 同步 2026 夏季赛赛程到本地 JSON（不依赖 DB）
-python -m scripts.backfill_league --league-id 20260003 --out data\raw
-
-# 拉取一场对局详情 + 打印梗点信号
-python -m scripts.spike_battle --battle-id 48251408_7_1781676660
+# 单个视频全链验收
+python -m scripts.analyze_collection --bvid BVxxxxx --pages 1-5 --caster 某解说 --match-id 2026071703
 ```
 
-### 2. Web
+服务器部署走 `systemd`（见 `scripts/watcher.py` 顶部注释），`ASR_DEVICE` 环境变量可切 `cuda:0` 走 GPU。
+
+### 2. web
 
 ```powershell
-cd C:\Users\18413\Desktop\kpl-meme\web
+cd web
 npm install
 npm run dev
 ```
 
+生产部署为**手动 `vercel --prod`**，push 到 GitHub 不会自动触发部署。
+
 ### 3. Supabase
 
-1. 新建 Supabase 项目
-2. 执行 `supabase/migrations/0001_init.sql`
-3. 把 URL / anon / service_role 写入 `pipeline/.env` 与 `web/.env.local`
+1. 新建 Supabase 项目，依次执行 `supabase/migrations/0001_init.sql`、`0002_er_lu_insights.sql`
+2. 把 URL / anon / service_role 写入 `pipeline/.env` 与 `web/.env.local`
 
 ## 环境变量
 
 见 `pipeline/.env.example`、`web/.env.example`。
 
-## Phase 0 本周验收清单
-
-- [x] 官方 4 类接口封装（leagues / matches / battles / battle）
-- [x] 梗点信号规则引擎（横扫、极端 KDA、经济差等）
-- [x] DB schema + RLS
-- [x] Next.js 骨架 + 首页 / 梗百科占位 / OG 路由
-- [x] DeepSeek 真生梗（本机 Key 已接入，模型 deepseek-chat 已跑通）
-- [x] GitHub 私有仓库 https://github.com/juzi1234566/kpl-meme
-- [ ] 填入 Supabase URL/anon/service_role（仅差这一步密钥）
-- [ ] 同步赛程入库 + Vercel 部署 web
-- [ ] yt-dlp 字幕 spike
-- [ ] 腾讯云轻量 + TMS
-
 ## 合规提示
 
-- 页脚必须「非官方 / AI 生成标识 / 举报邮箱」
+- 页脚「非官方 / AI 生成标识 / 举报邮箱」
 - 零选手照片、零官方海报
 - AI 内容 100% 标识 + `ai_generations` 审计留痕
+- 观点引用归属原 UP 主，附原视频跳转链接
