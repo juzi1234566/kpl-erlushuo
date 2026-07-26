@@ -36,7 +36,7 @@ load_dotenv(ROOT / ".env")
 CONFIG_PATH = ROOT / "config" / "casters.json"
 PYTHON = str(ROOT / ".venv" / "Scripts" / "python.exe")
 
-_PART_RE = re.compile(r"^(.+?)\s*(\d+)$")
+_PART_RE = re.compile(r"^(.+?)\s+(\d+)(?:-\d+)?$")
 
 
 def ts() -> str:

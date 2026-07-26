@@ -30,7 +30,7 @@ STATE_PATH = ROOT / "data" / "watcher_state.json"
 PYTHON = sys.executable
 
 POLL_MINUTES = 10
-MATCH_REFRESH_MINUTES = 60
+MATCH_REFRESH_MINUTES = 15
 BACKOFF_MINUTES = 30  # B站风控后的退避
 STALE_DAYS = 3  # 只追这几天内发布的视频，更早的存量不补跑
 
@@ -60,6 +60,20 @@ def run_step(args: list[str]) -> bool:
     return proc.returncode == 0
 
 
+def refresh_matches_if_stale(matches: list[dict], matches_at: float) -> tuple[list[dict], float]:
+    """赛程按 MATCH_REFRESH_MINUTES 过期刷新；单场比赛主播很多时内层循环可能跑很久，
+    调用方需要在每位主播处理完都探一次，不能只在外层循环顶部探一次，否则大合集会把刷新饿死太久。"""
+    if time.time() - matches_at <= MATCH_REFRESH_MINUTES * 60:
+        return matches, matches_at
+    from db.supabase_client import SupabaseRest
+
+    run_step(["scripts.sync_to_supabase"])  # 赛程
+    db = SupabaseRest()
+    matches = db.select("matches", "select=id,team1_id,team2_id,status,start_time&limit=500")
+    log(f"赛程刷新：{sum(1 for m in matches if m.get('status') == 2)} 场完赛")
+    return matches, time.time()
+
+
 def main() -> None:
     from scripts.night_batch import parse_caster_groups  # 复用分P解析
 
@@ -78,19 +92,10 @@ def main() -> None:
     log(f"监听启动 mid={mid} 每 {POLL_MINUTES} 分钟一轮")
     while True:
         try:
-            from db.supabase_client import SupabaseRest
             from signals.vod_matcher import guess_match
             from sources.bilibili_adapter import BilibiliAdapter
 
-            # 赛程缓存（每小时刷新一次，先 sync 再读）
-            if time.time() - matches_at > MATCH_REFRESH_MINUTES * 60:
-                run_step(["scripts.sync_to_supabase"])  # 赛程
-                db = SupabaseRest()
-                matches = db.select(
-                    "matches", "select=id,team1_id,team2_id,status,start_time&limit=500"
-                )
-                matches_at = time.time()
-                log(f"赛程刷新：{sum(1 for m in matches if m.get('status') == 2)} 场完赛")
+            matches, matches_at = refresh_matches_if_stale(matches, matches_at)
 
             with BilibiliAdapter(raw_dir=ROOT / "data" / "raw") as api:
                 videos = api.list_up_videos(mid, page_size=15)
@@ -133,7 +138,9 @@ def main() -> None:
                     log(f"  主播: {ordered}（合集共 {len(groups)} 位，本场预算余 {budget}）")
 
                     run_step(["scripts.fetch_game_stats", "--match-id", g.match_id])
+                    ok_count = 0
                     for caster in ordered:
+                        matches, matches_at = refresh_matches_if_stale(matches, matches_at)
                         pages = groups[caster][:max_games]
                         ok = run_step(
                             [
@@ -147,16 +154,29 @@ def main() -> None:
                             ]
                         )
                         if ok:
+                            ok_count += 1
                             done_casters.append(caster)
                             save_state(state)
-                    run_step(["scripts.review_insights", "--all"])
-                    run_step(["scripts.aggregate_match", "--match-id", g.match_id])
-                    run_step(["scripts.ingest_insights", "--match-id", g.match_id])
+                            # 每位主播完成就上云一次，用户尽早看到内容
+                            run_step(["scripts.review_insights", "--all"])
+                            run_step(["scripts.aggregate_match", "--match-id", g.match_id])
+                            run_step(["scripts.ingest_insights", "--match-id", g.match_id])
 
-                    state["processed_bvids"].append(bvid)
-                    state["processed_bvids"] = state["processed_bvids"][-200:]
-                    save_state(state)
-                    log(f"✅ {bvid} 处理完成并已上云")
+                    if ok_count > 0:
+                        state["processed_bvids"].append(bvid)
+                        state["processed_bvids"] = state["processed_bvids"][-200:]
+                        save_state(state)
+                        log(f"✅ {bvid} 完成 {ok_count}/{len(ordered)} 位主播并已上云")
+                    else:
+                        # 全部失败：不标记，稍后重试；连续失败 3 次才放弃
+                        fails = state.setdefault("fail_counts", {})
+                        fails[bvid] = fails.get(bvid, 0) + 1
+                        if fails[bvid] >= 3:
+                            state["processed_bvids"].append(bvid)
+                            log(f"❌ {bvid} 连续 {fails[bvid]} 次全部失败，放弃")
+                        else:
+                            log(f"🔁 {bvid} 本轮全部失败（第 {fails[bvid]} 次），下轮重试")
+                        save_state(state)
 
             time.sleep(POLL_MINUTES * 60)
         except KeyboardInterrupt:

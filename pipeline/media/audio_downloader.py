@@ -73,6 +73,31 @@ def download_audio(
     return wav_path
 
 
+_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+)
+
+
+def _bili_headers(sessdata: str) -> dict:
+    headers = {"User-Agent": _UA, "Referer": "https://www.bilibili.com/"}
+    if sessdata:
+        headers["Cookie"] = f"SESSDATA={sessdata}"
+    return headers
+
+
+def _api_json(url: str, params: dict, sessdata: str) -> dict:
+    import httpx
+
+    with httpx.Client(trust_env=False, timeout=30) as cli:  # B站直连，绝不走代理
+        resp = cli.get(url, params=params, headers=_bili_headers(sessdata))
+        resp.raise_for_status()
+        data = resp.json()
+    if data.get("code") != 0:
+        raise RuntimeError(f"B站 API {url} code={data.get('code')} {data.get('message')}")
+    return data["data"]
+
+
 def _download_one(
     bvid: str,
     out_dir: Path,
@@ -81,13 +106,97 @@ def _download_one(
     page: Optional[int],
     sessdata: Optional[str],
 ) -> int:
-    """下载单个分P，返回其时长（秒）。"""
+    """下载单个分P，返回其时长（秒）。
+
+    走 API（view→playurl→CDN 音频流），不碰 www 网页——机房 IP 访问网页会被 412，
+    API 与 CDN 不受影响。API 路线失败时回退 yt-dlp（住宅网络可用）。
+    """
+    sessdata = sessdata or os.getenv("BILI_SESSDATA") or ""
+    try:
+        return _download_one_api(bvid, out_dir, part_key, page=page, sessdata=sessdata)
+    except Exception:
+        return _download_one_ytdlp(bvid, out_dir, part_key, page=page, sessdata=sessdata)
+
+
+def _download_one_api(
+    bvid: str,
+    out_dir: Path,
+    part_key: str,
+    *,
+    page: Optional[int],
+    sessdata: str,
+) -> int:
+    import subprocess
+
+    import httpx
+
+    view = _api_json(
+        "https://api.bilibili.com/x/web-interface/view", {"bvid": bvid}, sessdata
+    )
+    pages = view.get("pages") or []
+    entry = None
+    if page:
+        entry = next((p for p in pages if p.get("page") == page), None)
+    elif pages:
+        entry = pages[0]
+    if not entry:
+        raise RuntimeError(f"{bvid} 找不到分P {page}")
+    cid = entry["cid"]
+    duration = int(entry.get("duration") or 0)
+
+    play = _api_json(
+        "https://api.bilibili.com/x/player/playurl",
+        {"bvid": bvid, "cid": cid, "fnval": 16},
+        sessdata,
+    )
+    audios = (play.get("dash") or {}).get("audio") or []
+    if not audios:
+        raise RuntimeError(f"{bvid} P{page} 无 DASH 音频流")
+    best = max(audios, key=lambda a: a.get("bandwidth") or 0)
+    urls = [best.get("baseUrl")] + list(best.get("backupUrl") or [])
+
+    m4s_path = out_dir / f"{part_key}.m4s"
+    last_err: Exception | None = None
+    for u in [u for u in urls if u]:
+        try:
+            with httpx.Client(trust_env=False, timeout=60) as cli:
+                with cli.stream("GET", u, headers=_bili_headers(sessdata)) as resp:
+                    resp.raise_for_status()
+                    with open(m4s_path, "wb") as f:
+                        for chunk in resp.iter_bytes(1 << 20):
+                            f.write(chunk)
+            last_err = None
+            break
+        except Exception as exc:  # noqa: BLE001
+            last_err = exc
+    if last_err is not None:
+        raise last_err
+
+    wav_path = out_dir / f"{part_key}.wav"
+    try:
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", str(m4s_path), "-ar", "16000", "-ac", "1", str(wav_path)],
+            check=True,
+            capture_output=True,
+        )
+    finally:
+        m4s_path.unlink(missing_ok=True)
+    return duration
+
+
+def _download_one_ytdlp(
+    bvid: str,
+    out_dir: Path,
+    part_key: str,
+    *,
+    page: Optional[int],
+    sessdata: str,
+) -> int:
     import yt_dlp  # 延迟导入
 
     url = f"https://www.bilibili.com/video/{bvid}"
     if page:
         url += f"?p={page}"
-    sessdata = sessdata or os.getenv("BILI_SESSDATA") or ""
 
     ydl_opts: dict = {
         "format": "bestaudio/best",

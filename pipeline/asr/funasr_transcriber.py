@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Optional
@@ -34,7 +35,7 @@ def _get_model():
             vad_model="fsmn-vad",
             punc_model="ct-punc",
             spk_model="cam++",
-            device="cpu",
+            device=os.getenv("ASR_DEVICE", "cpu"),
             disable_update=True,
         )
     return _MODEL

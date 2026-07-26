@@ -4,6 +4,6 @@
   "video_must_contain": ["二路"],
   "video_exclude": ["第一视角", "选手视角", "语音"],
   "casters": ["可温", "时间", "知舟"],
-  "max_casters_per_match": 3,
+  "max_casters_per_match": 99,
   "max_games_per_caster": 5
 }
